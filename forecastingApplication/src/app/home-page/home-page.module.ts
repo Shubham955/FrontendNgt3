@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { HomePageRoutingModule } from './home-page-routing.module';
 import { HomePageComponent } from './home-page/home-page.component';
-
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -11,7 +11,8 @@ import { HomePageComponent } from './home-page/home-page.component';
   ],
   imports: [
     CommonModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class HomePageModule { }

@@ -2,3 +2,38 @@ header{
     background-color: rgb(146, 255, 127);
     padding: 5px 10px;
 }
+
+#outerBox{
+    border: 1px solid black;
+    margin: 10px;
+    padding: 10px;
+}
+
+#addBt, #createBt, #timeSeriesLabel, #timeOptionsId, #rangeLabel, #startRangeId, #endRangeId{
+    margin: 3px 5px;
+}
+
+#timeSeriesDiv, #rangeDiv{
+    display: inline;
+    margin: 5px;
+}
+
+table, tr{
+    border: 2px solid rgb(21, 118, 4);
+    padding: 5px;
+}
+
+table{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td,th{
+    text-align: center;
+    padding: 5px;
+}
+
+.levelNameInput, .levelNameValues{
+    width: 100%;
+    text-align: center;
+}
