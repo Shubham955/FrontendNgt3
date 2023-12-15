@@ -9,19 +9,19 @@ import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl } from
 })
 export class HomePageComponent implements OnInit {
   collection: any = [];
-  nu:number=0;
+  nu: number = 0;
   worksheetForm!: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router) { }
 
   ngOnInit(): void {
-    this.worksheetForm=this.formBuilder.group({
-      timeSeriesType: ['',[Validators.required]],
-      startRange:[,[Validators.required]],
-      endRange:[,[Validators.required]],
-  levelNames:[[],[Validators.required]],
-  levelCount:[[],[Validators.required]]
+    this.worksheetForm = this.formBuilder.group({
+      timeSeriesType: [, [Validators.required]],
+      startRange: [, [Validators.required]],
+      endRange: [, [Validators.required]],
+      levelNames: [[], [Validators.required]],
+      levelCount: [[], [Validators.required]]
     });
   }
 
@@ -33,7 +33,7 @@ export class HomePageComponent implements OnInit {
   }
 
   add() {
-    this.nu=this.nu+1;
+    this.nu = this.nu + 1;
     this.collection.push(this.nu);
   }
 

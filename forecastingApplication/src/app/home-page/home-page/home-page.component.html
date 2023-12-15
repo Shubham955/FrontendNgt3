@@ -25,7 +25,7 @@
         <!-- rating input boxes -->
         <div id="rangeDiv">
             <label id="rangeLabel">Range</label>
-            <input type="text" id="startRangeId">-<input type="text" id="endRangeId">
+            <input type="text" id="startRangeId" formControlName="startRange" required>-<input type="text" id="endRangeId" formControlName="endRange" required>
         </div>
         <hr>
         <table id="levelInputTable">
@@ -36,8 +36,8 @@
             </tr>
             <tr *ngFor="let item of collection, let i=index">
                 <td>{{i+1}}</td>
-                <td><input type="text" class="levelNameInput"></td>
-                <td><input type="text" class="levelNameValues"></td>
+                <td><input type="text" class="levelNameInput" formControlName="levelNames[{{i}}]" required></td>
+                <td><input type="text" class="levelNameValues" formControlName="levelCount[{{i}}]" required></td>
             </tr>
         </table>
     </form>
