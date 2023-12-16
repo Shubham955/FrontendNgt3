@@ -33,7 +33,7 @@ td,th{
     padding: 5px;
 }
 
-.levelNameInput, .levelNameValues{
+.levelNameInput, .levelValueInput{
     width: 100%;
     text-align: center;
 }
