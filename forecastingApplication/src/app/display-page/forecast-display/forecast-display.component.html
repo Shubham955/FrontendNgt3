@@ -1,26 +1,51 @@
 <header>
-    <h5>Nagarro Forecasting Prototype</h5>
-  </header>
-  
-  <div class=" container mt-4">
-    <h4 class="text-centre">Forecast Worksheet</h4>
-      <table>
-        <thead>
-          <tr>
-            <th>{{ jsonData.levels.level1 }}</th>
+  <h5>Nagarro Forecasting Prototype</h5>
+</header>
+
+<div class=" container mt-4">
+  <h4 class="text-centre">Forecast Worksheet</h4>
+  <button class="btn btn-success" title="Save Worksheet">Save</button>
+  <button class="btn btn-primary" title="Fetch saved Worksheets" onclick="loadWorksheet()">Fetch</button>
+  <table>
+    <thead>
+      <tr>
+        <!-- <th>{{ jsonData.levels.level1 }}</th>
             <th>{{ jsonData.levels.level2 }}</th>
             <th>{{ jsonData.levels.level3 }}</th>
-            <th *ngFor="let year of years" >{{ year }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of jsonData.data">
+            <th *ngFor="let year of years" >{{ year }}</th>  -->
+        <th *ngFor="let name of levelNamesArr">
+          {{name}}
+        </th>
+        <th *ngFor="let timeVal of timeRangeArr">
+          {{timeVal}}
+        </th>
+      </tr>
+    </thead>
+    <tbody *ngIfElse="isOldWorksheet;newWorksheet">
+      <!-- old worksheet making tble from json recieved -->
+
+      <!-- <tr *ngFor="let item of jsonData.data">
             <td *ngFor="let level of jsonData.levels | keyvalue">
               {{ item[level.key] }}
             </td>
-          </tr>
-        </tbody>
-        <!-- <tbody>
+          </tr> -->
+    </tbody>
+    <tbody #newWorksheet>
+      <!-- tr
+                th loop till count of headers
+                  span of input box  -->
+      <span *ngFor="let levCount of levelCountArr">
+        <span *ngFor="let it1 of [].constructor(levCount); let i = index">
+          <span *ngFor="let it2 of [].constructor(levCount); let i = index">
+            <span ngfor>
+
+            </span>
+            
+          </span>
+        </span>
+      </span>
+    </tbody>
+    <!-- <tbody>
           <tr *ngFor="let item of jsonData.data">
             <td>{{ item.level1 }}</td>
             <td *ngFor="let gender of ['male', 'female']">

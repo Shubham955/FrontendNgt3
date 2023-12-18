@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { WorksheetParametersTransferService } from 'src/app/services/worksheet-parameters-transfer.service';
 
 @Component({
   selector: 'app-forecast-display',
@@ -6,79 +9,188 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./forecast-display.component.css'],
 })
 export class ForecastDisplayComponent implements OnInit{
-  // levels:any=[];
-  // data:any=[];
+  levelNamesArr:any=[];
+  timeRangeArr:any=[];
+  levelCountArr:any=[];
   years: any = [];
+  isOldWorksheet:boolean=false;
+  levelNameValueArr:any=[];
 
-  jsonData = {
-    levels: {
-      level1: 'Country',
-      level2: 'Gender',
-      level3: 'Age Group',
-      series: 'year',
-      'range-start': '2019',
-      'range-end': '2023',
+  constructor(private formBuilder: FormBuilder,
+    private router: Router,
+    private worksheetParametersTransferService:WorksheetParametersTransferService) { }
+
+  // jsonData = {
+  //   levels: {
+  //     level1: 'Country',
+  //     level2: 'Gender',
+  //     level3: 'Age Group',
+  //     series: 'year',
+  //     'range-start': '2019',
+  //     'range-end': '2023',
+  //   },
+  //   data: [
+  //     {
+  //       level1: 'country1',
+  //       male: {
+  //         '20-40': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //         '40-60': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //         '60-80': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //       },
+  //       female: {
+  //         '20-40': {
+  //           '2019': 19,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //         '40-60': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //         '60-80': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //       },
+  //     },
+  //   ],
+  // };
+
+  jsonData={
+    "levels": {
+      "level1": "Country",
+      "level2": "Gender",
+      "level3": "Age Group",
+      "series": "year",
+      "range-start": "2019",
+      "range-end": "2023"
     },
-    data: [
+    "sheet": [
       {
-        level1: 'country1',
-        male: {
-          '20-40': {
-            '2019': 10,
-            '2020': 8,
-            '2021': 15,
-          },
-          '40-60': {
-            '2019': 10,
-            '2020': 8,
-            '2021': 15,
-          },
-          '60-80': {
-            '2019': 10,
-            '2020': 8,
-            '2021': 15,
-          },
-        },
-        female: {
-          '20-40': {
-            '2019': 19,
-            '2020': 8,
-            '2021': 15,
-          },
-          '40-60': {
-            '2019': 10,
-            '2020': 8,
-            '2021': 15,
-          },
-          '60-80': {
-            '2019': 10,
-            '2020': 8,
-            '2021': 15,
-          },
-        },
+        "country": "a",
+        "gender": "male",
+        "age": "20-40",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
       },
-    ],
+      {
+        "country": "a",
+        "gender": "male",
+        "age": "40-60",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "a",
+        "gender": "female",
+        "age": "20-40",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "a",
+        "gender": "female",
+        "age": "40-60",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "b",
+        "gender": "male",
+        "age": "20-40",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "b",
+        "gender": "male",
+        "age": "40-60",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "b",
+        "gender": "female",
+        "age": "20-40",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "b",
+        "gender": "female",
+        "age": "40-60",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      }
+    ]
   };
-
 
   ngOnInit(): void {
     // this.getLevels();
     // this.getData();
     this.getYearRange();
+    this.populateParameters();
   }
 
   getYearRange(){
-    const startYear = 2019; 
-    const endYear = new Date().getFullYear(); 
+    const startRng = this.worksheetParametersTransferService.startRange; 
+    const endRng = this.worksheetParametersTransferService.endRange; 
 
     // Generate an array of years from startYear to endYear
-    for (let year = startYear; year <= endYear; year++) {
-      this.years.push(year);
+    for (let i = startRng; i <= endRng; i++) {
+      this.timeRangeArr.push(i);
     }
-    console.log("Year Range", this.years)
+    console.log("Time Range", this.timeRangeArr);
   }
 
-  
+  populateParameters(){
+    this.levelNamesArr=['Country', 'Gender', 'Age Group'];//this.worksheetParametersTransferService.levelNames;
+    this.levelCountArr=[2,2,3];//this.worksheetParametersTransferService.levelCount;
+    this.levelNameValueArr=['Country 1','Country 2','Male','Female','Age 20-40','Age 40-60','Age 60-80'];
+  }
+
+  loadWorksheet(){
+    this.isOldWorksheet=true;
+  }
+
   // getLevels() {
   //   this.dataService.getLevels().subscribe((res)=>{
   //       this.levels=res;
