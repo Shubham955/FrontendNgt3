@@ -3,7 +3,6 @@
 </header>
 <br>
 <div id="outerBox">
-    <button class="btn btn-success" id="addBt" (click)="add()">Add Label</button>
     <form [formGroup]="worksheetForm" (ngSubmit)="createWorksheet()">
         <input type="submit" class="btn btn-success" id="createBt" value="Create Sheet">
         <!-- <button class="btn btn-success">Sync Changes</button> -->
@@ -11,34 +10,46 @@
         <!-- time series dropdown -->
         <div id="timeSeriesDiv">
             <label for="timeOptionsId" id="timeSeriesLabel">Time Series</label>
-            <!-- <select id="timeOptionsId"> formControlName="timeOptions" (change)="onSelected($event)" required> -->
             <select id="timeOptionsId" formControlName="timeSeriesType" (change)="onSelected($event)" required>
                 <option value="">Choose Time Series</option>
-                <option value="1">Year</option>
-                <option value="2">Quarter</option>
-                <option value="3">Month</option>
-                <option value="4">Week</option>
-                <option value="5">Day</option>
+                <option value="Year">Year</option>
+                <option value="Quarter">Quarter</option>
+                <option value="Month">Month</option>
+                <option value="Week">Week</option>
+                <option value="Day">Day</option>
             </select>
         </div>
 
-        <!-- rating input boxes -->
+        <!-- time series range input boxes -->
         <div id="rangeDiv">
             <label id="rangeLabel">Range</label>
-            <input type="text" id="startRangeId" formControlName="startRange" required>-<input type="text" id="endRangeId" formControlName="endRange" required>
+            <input type="text" id="startRangeId" formControlName="startRange" required>-<input type="text"
+                id="endRangeId" formControlName="endRange" required>
         </div>
-        <hr>
-        <table id="levelInputTable">
-            <tr>
-                <th>Level No.</th>
-                <th>Name</th>
-                <th>Possible Values (Count)</th>
-            </tr>
-            <tr *ngFor="let item of collection, let i=index">
-                <td>{{i+1}}</td>
-                <td><input type="text" class="levelNameInput" formControlName="levelNames[{{i}}]" required></td>
-                <td><input type="text" class="levelNameValues" formControlName="levelCount[{{i}}]" required></td>
-            </tr>
-        </table>
     </form>
+    <button class="btn btn-success" id="addBt" (click)="add()">Add Label</button>
+    <!-- add level div -->
+    <form *ngIf="isLevelToBeAdded" [formGroup]="addLevelForm" (ngSubmit)="saveLevel()">
+        <label for="levelNoId" id="levelNoLabel">Level No.</label><input type="text" id="levelNoId"
+            value="{{levelNumber+1}}" readonly><br>
+        <label for="levelNameId" id="levelNameLabel">Name</label><input type="text" id="levelNameId"
+            placeholder="Level Name" formControlName="levelName" required><br>
+        <label for="levelValueId" id="levelValueLabel">Values</label><input type="text" id="levelValueId"
+            placeholder="Possible Values (Count)" formControlName="levelValue" required><br>
+        <input type="submit" class="btn btn-success" value="Save">
+    </form>
+    <hr>
+    <table id="levelInputTable">
+        <tr>
+            <th>Level No.</th>
+            <th>Name</th>
+            <th>Possible Values (Count)</th>
+        </tr>
+        <!-- <tr *ngFor="let num of levelNoArr" *ngFor="let nameVal of levelNameArr" *ngFor="let val of levelCountArr;"> -->
+        <tr *ngFor="let num of levelNoArr, let i=index">
+            <td>{{levelNoArr[i]}}</td>
+            <td>{{levelNameArr[i]}}</td>
+            <td>{{levelCountArr[i]}}</td>
+        </tr>
+    </table>
 </div>

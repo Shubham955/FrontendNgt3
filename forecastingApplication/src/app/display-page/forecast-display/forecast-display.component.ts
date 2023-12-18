@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-forecast-display',
   templateUrl: './forecast-display.component.html',
   styleUrls: ['./forecast-display.component.css'],
 })
-export class ForecastDisplayComponent {
+export class ForecastDisplayComponent implements OnInit{
   // levels:any=[];
   // data:any=[];
   years: any = [];
