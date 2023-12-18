@@ -1,31 +1,31 @@
 <header>
-  <h5>Nagarro Forecasting Prototype</h5>
-</header>
-
-<div class=" container mt-4">
-  <h4 class="text-centre">Forecast Worksheet</h4>
-  <table>
-    <thead>
-      <tr>
-        <th>{{ jsonData.levels.level1 }}</th>
-        <th>{{ jsonData.levels.level2 }}</th>
-        <th>{{ jsonData.levels.level3 }}</th>
-        <th *ngFor="let year of years">{{ year }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let yr of years">
-        <td>{{yr}}First</td>
-        <td>{{yr}}First2nd</td>
-        <td>{{yr}}First3rd</td>
-      </tr>
-    </tbody>
-    <!-- <tbody>
+    <h5>Nagarro Forecasting Prototype</h5>
+  </header>
+  
+  <div class=" container mt-4">
+    <h4 class="text-centre">Forecast Worksheet</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>{{ jsonData.levels.level1 }}</th>
+            <th>{{ jsonData.levels.level2 }}</th>
+            <th>{{ jsonData.levels.level3 }}</th>
+            <th *ngFor="let year of years" >{{ year }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of jsonData.data">
+            <td *ngFor="let level of jsonData.levels | keyvalue">
+              {{ item[level.key] }}
+            </td>
+          </tr>
+        </tbody>
+        <!-- <tbody>
           <tr *ngFor="let item of jsonData.data">
             <td>{{ item.level1 }}</td>
             <td *ngFor="let gender of ['male', 'female']">
               <td *ngFor="let ageGroup of ['20-40', '40-60', '60-80']">
-                <td *ngFor="let year of getYearRange()">{{ item[gender][ageGroup][year] }}</td>
+                <td *ngFor="let year of years">{{ item[gender][ageGroup][year] }}</td>
               </td>
             </td>
           </tr>
