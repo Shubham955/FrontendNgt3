@@ -3,7 +3,6 @@
 </header>
 <br>
 <div id="outerBox">
-    <button class="btn btn-success" id="addBt" (click)="add()">Add Label</button>
     <form [formGroup]="worksheetForm" (ngSubmit)="createWorksheet()">
         <input type="submit" class="btn btn-success" id="createBt" value="Create Sheet">
         <!-- <button class="btn btn-success">Sync Changes</button> -->
@@ -28,11 +27,14 @@
                 id="endRangeId" formControlName="endRange" required>
         </div>
     </form>
+    <button class="btn btn-success" id="addBt" (click)="add()">Add Label</button>
     <!-- add level div -->
     <form *ngIf="isLevelToBeAdded" [formGroup]="addLevelForm" (ngSubmit)="saveLevel()">
-        <label for="levelNoId">Level No.</label><input type="text" id="levelNoId" value="{{levelNumber}}" readonly><br>
-        <label for="levelNameId">Name</label><input type="text" id="levelNameId" placeholder="Level Name" formControlName="levelName" required><br>
-        <label for="levelValueId">Values</label><input type="text" id="levelValueId"
+        <label for="levelNoId" id="levelNoLabel">Level No.</label><input type="text" id="levelNoId"
+            value="{{levelNumber+1}}" readonly><br>
+        <label for="levelNameId" id="levelNameLabel">Name</label><input type="text" id="levelNameId"
+            placeholder="Level Name" formControlName="levelName" required><br>
+        <label for="levelValueId" id="levelValueLabel">Values</label><input type="text" id="levelValueId"
             placeholder="Possible Values (Count)" formControlName="levelValue" required><br>
         <input type="submit" class="btn btn-success" value="Save">
     </form>

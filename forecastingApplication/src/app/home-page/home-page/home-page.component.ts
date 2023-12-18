@@ -26,11 +26,8 @@ export class HomePageComponent implements OnInit {
       timeSeriesType: [, [Validators.required]],
       startRange: [, [Validators.required]],
       endRange: [, [Validators.required]]
-      // levelNames: [, [Validators.required]],
-      // levelCount: [, [Validators.required]]
     });
     this.addLevelForm=this.formBuilder.group({
-      // levelNo: [, [Validators.required]],
       levelName: [,[Validators.required]],
       levelValue: [,[Validators.required]]
     });
@@ -45,6 +42,7 @@ export class HomePageComponent implements OnInit {
 
   saveLevel(){
     console.log(this.addLevelForm.value.levelName,"addForm",this.addLevelForm.value.levelValue);
+    this.levelNumber = this.levelNumber + 1;
     this.levelNoArr.push(this.levelNumber);
     this.levelNameArr.push(this.addLevelForm.value.levelName);
     this.levelCountArr.push(this.addLevelForm.value.levelValue);
@@ -53,7 +51,6 @@ export class HomePageComponent implements OnInit {
   }
 
   add() {
-    this.levelNumber = this.levelNumber + 1;
     this.isLevelToBeAdded=true;
   }
 
@@ -64,11 +61,6 @@ export class HomePageComponent implements OnInit {
     this.worksheetParametersTransferService.levelNames=this.levelNameArr;
     this.worksheetParametersTransferService.levelCount=this.levelCountArr;
 
-    console.log(this.worksheetParametersTransferService.endRange);
-    console.log(this.worksheetParametersTransferService.startRange);
-    console.log("tst",this.worksheetParametersTransferService.timeSeriesType);
-    console.log(this.worksheetParametersTransferService.levelNames);
-    console.log(this.worksheetParametersTransferService.levelCount);
     this.router.navigate(['/worksheet']);
   }
 }
