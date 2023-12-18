@@ -13,12 +13,19 @@
             <th *ngFor="let year of years" >{{ year }}</th>
           </tr>
         </thead>
+       <tbody>
+          <tr *ngFor="let item of jsonData.data">
+            <td *ngFor="let level of jsonData.levels | keyvalue">
+              {{ item[level.key] }}
+            </td>
+          </tr>
+        </tbody>
         <!-- <tbody>
           <tr *ngFor="let item of jsonData.data">
             <td>{{ item.level1 }}</td>
             <td *ngFor="let gender of ['male', 'female']">
               <td *ngFor="let ageGroup of ['20-40', '40-60', '60-80']">
-                <td *ngFor="let year of getYearRange()">{{ item[gender][ageGroup][year] }}</td>
+                <td *ngFor="let year of years">{{ item[gender][ageGroup][year] }}</td>
               </td>
             </td>
           </tr>
