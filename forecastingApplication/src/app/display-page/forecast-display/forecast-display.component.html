@@ -13,6 +13,13 @@
             <th *ngFor="let year of years" >{{ year }}</th>
           </tr>
         </thead>
+        <tbody>
+          <tr *ngFor="let item of jsonData.data">
+            <td *ngFor="let level of jsonData.levels | keyvalue">
+              {{ item[level.key] }}
+            </td>
+          </tr>
+        </tbody>
         <!-- <tbody>
           <tr *ngFor="let item of jsonData.data">
             <td>{{ item.level1 }}</td>
