@@ -73,7 +73,7 @@ export class HomePageComponent implements OnInit {
       if(result==-1){
         this.sheetNameExists=true;
       } else {
-        this.router.navigate(['/worksheet']);
+        this.router.navigate(['/worksheet']); 
       }
     });
   }
@@ -82,7 +82,7 @@ export class HomePageComponent implements OnInit {
     let jsonSheetCreate='{"tableName": '+this.worksheetParametersTransferService.sheetName+',"fields": [';
     //all levels filled in fields section
     for(let i=0;i<this.worksheetParametersTransferService.levelNames.length;i++){
-      jsonSheetCreate=jsonSheetCreate+'{ "name": '+this.worksheetParametersTransferService.levelNames[i]+', "type": "String" },';
+      jsonSheetCreate=jsonSheetCreate+'{ "name": '+this.worksheetParametersTransferService.levelNames[i]+', "type": "String", "numberOfValues": '+this.worksheetParametersTransferService.levelCount[i]+' },';
     }
     //data filled in fields section
     jsonSheetCreate=jsonSheetCreate+'{ "name": "data", "type": "Object" }], "time" : {';
