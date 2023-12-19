@@ -185,10 +185,23 @@ export class ForecastDisplayComponent implements OnInit{
     this.levelNamesArr=['Country', 'Gender', 'Age Group'];//this.worksheetParametersTransferService.levelNames;
     this.levelCountArr=[2,2,3];//this.worksheetParametersTransferService.levelCount;
     this.levelNameValueArr=['Country 1','Country 2','Male','Female','Age 20-40','Age 40-60','Age 60-80'];
+    console.log("LL",this.levelNamesArr.length);
   }
 
   loadWorksheet(){
     this.isOldWorksheet=true;
+  }
+
+  genNewSheetJson(){
+    
+    var newSheetJson='{"levels": {';
+    for(let y=0;y<this.levelNamesArr.length;y++){
+      newSheetJson=newSheetJson+ '"level'+(y+1)+'": "'+this.levelNamesArr[y]+'",';
+    }
+    newSheetJson=newSheetJson+'"series": "'+this.worksheetParametersTransferService.timeSeriesType+'",';
+    newSheetJson=newSheetJson+'"series": "'+this.worksheetParametersTransferService.startRange+'",';
+    newSheetJson=newSheetJson+'"series": "'+this.worksheetParametersTransferService.endRange+'",},';
+
   }
 
   // getLevels() {
