@@ -18,7 +18,7 @@ export class ForecastDisplayComponent implements OnInit{
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
-    private worksheetParametersTransferService:WorksheetParametersTransferService) { }
+    public worksheetParametersTransferService:WorksheetParametersTransferService) { }
 
   // jsonData = {
   //   levels: {
@@ -70,15 +70,17 @@ export class ForecastDisplayComponent implements OnInit{
   //   ],
   // };
 
-  jsonData={
-    "levels": {
-      "level1": "Country",
-      "level2": "Gender",
-      "level3": "Age Group",
-      "series": "year",
-      "range-start": "2019",
-      "range-end": "2023"
-    },
+  jsonDataSchema={
+    "tableName": "testtable",
+    "fields": [
+      { "name": "country", "type": "String" },
+      { "name": "gender", "type": "String" },
+      { "name": "size", "type": "String" },
+      { "name": "data", "type": "Object" }
+    ]
+  }
+
+  jsonDataLevels={
     "sheet": [
       {
         "country": "a",

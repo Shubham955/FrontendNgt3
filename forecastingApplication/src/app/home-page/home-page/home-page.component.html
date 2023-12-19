@@ -5,7 +5,13 @@
 <div id="outerBox">
     <form [formGroup]="worksheetForm" (ngSubmit)="createWorksheet()">
         <input type="submit" class="btn btn-success" id="createBt" value="Create Sheet">
+        <br>
         <!-- <button class="btn btn-success">Sync Changes</button> -->
+
+        <div id="sheetInfo">
+            <label for="sheetNameId">Name</label>
+            <input type="text" id="sheetNameId" placeholder="Worksheet Name" formControlName="sheetName" required>
+        </div>
 
         <!-- time series dropdown -->
         <div id="timeSeriesDiv">
@@ -23,10 +29,11 @@
         <!-- time series range input boxes -->
         <div id="rangeDiv">
             <label id="rangeLabel">Range</label>
-            <input type="text" id="startRangeId" formControlName="startRange" required>-<input type="text"
-                id="endRangeId" formControlName="endRange" required>
+            <input type="text" id="startRangeId" formControlName="startRange" placeholder="Start Range" required>-<input type="text"
+                id="endRangeId" formControlName="endRange" placeholder="End Range" required>
         </div>
     </form>
+    <label class="text-danger" *ngIf="sheetNameExists">Sheet Name already exists</label><br>
     <button class="btn btn-success" id="addBt" (click)="add()">Add Label</button>
     <!-- add level div -->
     <form *ngIf="isLevelToBeAdded" [formGroup]="addLevelForm" (ngSubmit)="saveLevel()">
@@ -38,7 +45,7 @@
             placeholder="Possible Values (Count)" formControlName="levelValue" required><br>
         <input type="submit" class="btn btn-success" value="Save">
     </form>
-    <hr>
+    <hr> 
     <table id="levelInputTable">
         <tr>
             <th>Level No.</th>

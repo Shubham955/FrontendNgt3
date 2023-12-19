@@ -4,11 +4,12 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class WorksheetParametersTransferService {
+  sheetName: any;
   timeSeriesType:any;
   startRange:any;
   endRange:any;
   levelNames:any=[];
-  levelCount:any=[];
+  levelCount:any=[]; 
   
   constructor() { }
 }
