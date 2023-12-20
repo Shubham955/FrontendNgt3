@@ -164,7 +164,7 @@ export class ForecastDisplayComponent implements OnInit{
       }
     ]
   };
-
+ 
   ngOnInit(): void {
     // this.getLevels();
     // this.getData();
@@ -188,6 +188,7 @@ export class ForecastDisplayComponent implements OnInit{
     this.levelCountArr=[2,2,3];//this.worksheetParametersTransferService.levelCount;
     this.levelNameValueArr=['Country 1','Country 2','Male','Female','Age 20-40','Age 40-60','Age 60-80'];
     console.log("LL",this.levelNamesArr.length);
+    this.genNewSheetJson();
   }
 
   loadWorksheet(){
