@@ -10,6 +10,6 @@ export class ForecastManagementService {
   constructor(private httpClient: HttpClient) { }
 
   saveTableSchema(data:any){
-    return this.httpClient.post(`${this.url}/createSchema`,data);
+    return this.httpClient.post(`${this.url}/schema`,data);
   }
 }
