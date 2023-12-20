@@ -24,23 +24,22 @@ export class ForecastDisplayComponent implements OnInit{
     private router: Router,
     public worksheetParametersTransferService:WorksheetParametersTransferService) { }
 
-  inputObject = {
-  "tableName": "testtabletime",
-  "fields": [
-    { "name": "country", "type": "String", "numberOfValues": 2 },
-    { "name": "gender", "type": "String", "numberOfValues": 2 },
-    { "name": "age", "type": "String", "numberOfValues": 3 },
-    { "name": "data", "type": "Object" }
-  ],
-  "time": {
-    "series": "year",
-    "start": 2019,
-    "end": 2021
-  }
+  // inputObject = {
+  // "tableName": "testtabletime",
+  // "fields": [
+  //   { "name": "country", "type": "String", "numberOfValues": 2 },
+  //   { "name": "gender", "type": "String", "numberOfValues": 2 },
+  //   { "name": "age", "type": "String", "numberOfValues": 3 },
+  //   { "name": "data", "type": "Object" } 
+  // ],
+  // "time": {
+  //   "series": "year",
+  //   "start": 2019,
+  //   "end": 2021
+  // }
+// };
 
-
-
-};
+  inputObject=this.worksheetParametersTransferService.jsonSchemaCreate;
 
   jsonDataSchema={
     "tableName": "testtable",

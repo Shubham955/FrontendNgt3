@@ -68,6 +68,7 @@ export class HomePageComponent implements OnInit {
 
     let creationJsonData=this.getCreationTimeJson();
 
+    this.worksheetParametersTransferService.jsonSchemaCreate=creationJsonData;
     // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
     //   console.log("result fetched",result);
     //   if(result==-1){
