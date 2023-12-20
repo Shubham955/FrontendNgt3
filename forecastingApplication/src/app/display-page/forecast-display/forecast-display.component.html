@@ -1,11 +1,14 @@
-<header>
-  <h5>Nagarro Forecasting Prototype</h5>
+<header class="bg-success">
+  <h5 class="text-light">Nagarro Forecasting Prototype</h5>
 </header>
 
 <div class=" container mt-4">
-  <h4 class="text-centre">Forecast Worksheet</h4>
-  <button class="btn btn-success" title="Save Worksheet">Save</button>
-  <button class="btn btn-primary" title="Fetch saved Worksheets" onclick="loadWorksheet()">Fetch</button>
+  <h4 class="text-center">Forecast Worksheet</h4>
+  <div class="my-3">
+    <button class="btn btn-success" title="Save Worksheet">Save</button>
+    <button class="btn btn-primary mx-3" title="Fetch saved Worksheets" onclick="loadWorksheet()">Fetch</button>
+    <button class="btn btn-secondary" routerLink="" title="Back">Back</button>
+  </div>
   <table>
     <thead>
       <tr>
@@ -45,15 +48,5 @@
         </span>
       </span>
     </tbody>
-    <!-- <tbody>
-          <tr *ngFor="let item of jsonData.data">
-            <td>{{ item.level1 }}</td>
-            <td *ngFor="let gender of ['male', 'female']">
-              <td *ngFor="let ageGroup of ['20-40', '40-60', '60-80']">
-                <td *ngFor="let year of years">{{ item[gender][ageGroup][year] }}</td>
-              </td>
-            </td>
-          </tr>
-        </tbody> -->
   </table>
 </div>
