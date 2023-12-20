@@ -92,6 +92,30 @@ export class HomePageComponent implements OnInit {
     jsonSheetCreate=jsonSheetCreate+'"end" : '+this.worksheetParametersTransferService.endRange+'}  }'; 
 
     console.log(jsonSheetCreate);
-    return jsonSheetCreate;
+
+    let jsonSheet = {};
+    jsonSheet["tableName"]= this.worksheetParametersTransferService.sheetName;
+    
+    let fieldArray=[];
+    for(let i=0;i<this.worksheetParametersTransferService.levelNames.length;i++){
+      let obj= {}
+      obj["name"]= this.worksheetParametersTransferService.levelNames[i];
+      obj["type"]= "String";
+      obj["numberOfValues"]= this.worksheetParametersTransferService.levelCount[i];
+      fieldArray.push(obj);
+    }
+    fieldArray.push({"name": "data", "type":"Object"});
+
+    jsonSheet["fields"] = fieldArray;
+
+    jsonSheet["time"] = {
+      "series": this.worksheetParametersTransferService.timeSeriesType,
+      "start": this.worksheetParametersTransferService.startRange,
+      "end": this.worksheetParametersTransferService.endRange
+    }
+
+    console.log(jsonSheet)
+
+    return jsonSheet;
   }
 }
