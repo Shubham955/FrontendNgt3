@@ -13,9 +13,13 @@ header{
     margin: 3px 5px;
 }
 
-#timeSeriesDiv, #rangeDiv{
+#sheetInfo, #timeSeriesDiv, #rangeDiv{
     display: inline;
     margin: 5px;
+}
+
+#sheetNameId{
+    margin-left: 10px;
 }
 
 #levelNoId, #levelNameId, #levelValueId{

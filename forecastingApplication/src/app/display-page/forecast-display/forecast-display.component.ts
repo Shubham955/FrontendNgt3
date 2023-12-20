@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormRecord } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WorksheetParametersTransferService } from 'src/app/services/worksheet-parameters-transfer.service';
+import { Field } from 'src/app/field';
+import { Sheet } from 'src/app/sheet';
+import { SheetEntry } from 'src/app/sheetentry';
+import { Time } from 'src/app/time';
 
 @Component({
   selector: 'app-forecast-display',
@@ -18,7 +22,57 @@ export class ForecastDisplayComponent implements OnInit{
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
-    private worksheetParametersTransferService:WorksheetParametersTransferService) { }
+    public worksheetParametersTransferService:WorksheetParametersTransferService) { }
+
+  // jsonData = {
+  //   levels: {
+  //     level1: 'Country',
+  //     level2: 'Gender',
+  //     level3: 'Age Group',
+  //     series: 'year',
+  //     'range-start': '2019',
+  //     'range-end': '2023',
+  //   },
+  //   data: [
+  //     {
+  //       level1: 'country1',
+  //       male: {
+  //         '20-40': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //         '40-60': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //         '60-80': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //       },
+  //       female: {
+  //         '20-40': {
+  //           '2019': 19,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //         '40-60': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //         '60-80': {
+  //           '2019': 10,
+  //           '2020': 8,
+  //           '2021': 15,
+  //         },
+  //       },
+  //     },
+  //   ],
+  // };
 
   jsonData={
     "levels": {
@@ -112,7 +166,7 @@ export class ForecastDisplayComponent implements OnInit{
       }
     ]
   };
-
+ 
   ngOnInit(): void {
     this.getYearRange();
     this.populateParameters();
@@ -134,6 +188,7 @@ export class ForecastDisplayComponent implements OnInit{
     this.levelCountArr=[2,2,3];//this.worksheetParametersTransferService.levelCount;
     this.levelNameValueArr=['Country 1','Country 2','Male','Female','Age 20-40','Age 40-60','Age 60-80'];
     console.log("LL",this.levelNamesArr.length);
+    this.genNewSheetJson();
   }
 
   loadWorksheet(){
@@ -151,4 +206,18 @@ export class ForecastDisplayComponent implements OnInit{
     newSheetJson=newSheetJson+'"series": "'+this.worksheetParametersTransferService.endRange+'",},';
 
   }
+
+  // getLevels() {
+  //   this.dataService.getLevels().subscribe((res)=>{
+  //       this.levels=res;
+  //       console.log("levels", this.levels);
+  //   })
+  // }
+
+  // getData() {
+  //   this.dataService.getData().subscribe((res)=>{
+  //     this.data=res;
+  //     console.log("data", this.data);
+  // })
+  // }
 }
