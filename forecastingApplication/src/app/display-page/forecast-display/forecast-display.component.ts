@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormRecord } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WorksheetParametersTransferService } from 'src/app/services/worksheet-parameters-transfer.service';
+import { Field } from 'src/app/field';
+import { Sheet } from 'src/app/sheet';
+import { SheetEntry } from 'src/app/sheetentry';
+import { Time } from 'src/app/time';
 
 @Component({
   selector: 'app-forecast-display',
@@ -20,55 +24,23 @@ export class ForecastDisplayComponent implements OnInit{
     private router: Router,
     public worksheetParametersTransferService:WorksheetParametersTransferService) { }
 
-  // jsonData = {
-  //   levels: {
-  //     level1: 'Country',
-  //     level2: 'Gender',
-  //     level3: 'Age Group',
-  //     series: 'year',
-  //     'range-start': '2019',
-  //     'range-end': '2023',
-  //   },
-  //   data: [
-  //     {
-  //       level1: 'country1',
-  //       male: {
-  //         '20-40': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //         '40-60': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //         '60-80': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //       },
-  //       female: {
-  //         '20-40': {
-  //           '2019': 19,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //         '40-60': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //         '60-80': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //       },
-  //     },
-  //   ],
-  // };
+  inputObject = {
+  "tableName": "testtabletime",
+  "fields": [
+    { "name": "country", "type": "String", "numberOfValues": 2 },
+    { "name": "gender", "type": "String", "numberOfValues": 2 },
+    { "name": "age", "type": "String", "numberOfValues": 3 },
+    { "name": "data", "type": "Object" }
+  ],
+  "time": {
+    "series": "year",
+    "start": 2019,
+    "end": 2021
+  }
+
+
+
+};
 
   jsonDataSchema={
     "tableName": "testtable",
@@ -206,6 +178,76 @@ export class ForecastDisplayComponent implements OnInit{
     newSheetJson=newSheetJson+'"series": "'+this.worksheetParametersTransferService.endRange+'",},';
 
   }
+
+generateSheet(inputObject: { fields: Field[]; time: { start: any; end: number; }; } ): Sheet {
+  const outputObject: Sheet = {
+    sheet: [],
+  };
+
+  const combinations = this.generateCombinations(inputObject.fields);
+
+  let combinationCounts: Record<string, number> = {}; // Keep track of counts for each combination
+
+  combinations.forEach((combination: Field[]) => {
+    const emptydata : Record<string,number> = {};
+    const sheetEntry: SheetEntry = {
+      data: emptydata
+,
+    };
+
+    combination.forEach((field: Field) => {
+      if (field.type === "Object") {
+        for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
+          sheetEntry['data'][year.toString()] = 0; // Initialize data for each year to 0
+        }
+      } else {
+        sheetEntry[field.name] = field.value as string;
+      }
+    });
+
+    const combinationKey = JSON.stringify(sheetEntry); // Use a unique key for each combination
+
+    if (!combinationCounts[combinationKey]) {
+      combinationCounts[combinationKey] = 1;
+    }
+
+    for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
+      sheetEntry['data'][year.toString()] = combinationCounts[combinationKey];
+    }
+
+    combinationCounts[combinationKey]++;
+    outputObject.sheet.push(sheetEntry);
+  });
+  console.log(outputObject);
+  
+  return outputObject;
+}
+
+generateCombinations(fields: Field[]): Field[][] {
+  const combinations: Field[][] = [];
+
+  const generateCombination = (currentCombination: Field[], remainingFields: Field[]): void => {
+    if (remainingFields.length === 0) {
+      combinations.push([...currentCombination]);
+      return;
+    }
+
+    const currentField = remainingFields[0];
+    remainingFields = remainingFields.slice(1);
+
+    if (currentField) {
+      const numberOfValues = currentField.numberOfValues || 1; // Default to 1 if numberOfValues is not provided
+
+      for (let i = 0; i < numberOfValues; i++) {
+        generateCombination([...currentCombination, { name: currentField.name, type: currentField.type, value: `${currentField.name}${i + 1}` }], remainingFields);
+      }
+    }
+  };
+
+  generateCombination([], fields);
+
+  return combinations;
+}  
 
   // getLevels() {
   //   this.dataService.getLevels().subscribe((res)=>{
