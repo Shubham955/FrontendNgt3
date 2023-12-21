@@ -20,10 +20,9 @@
         </th>
       </tr>
     </thead>
-
     <!-- Generating Table -->
     <tbody>
-      <tr *ngFor="let item of jsonData.sheet">
+      <tr *ngFor="let item of outputObjectJson.sheet">
         <td>{{ item.country }}</td>
         <td>{{ item.gender }}</td>
         <td>{{ item.age }}</td>
@@ -32,21 +31,5 @@
         </td>
       </tr>
     </tbody>
-
-
-    <!-- <tbody *ngIfElse="isOldWorksheet; newWorksheet">
-    </tbody>
-    <tbody #newWorksheet>
-      <span *ngFor="let levCount of levelCountArr">
-        <span *ngFor="let it1 of [].constructor(levCount); let i = index">
-          <span *ngFor="let it2 of [].constructor(levCount); let i = index">
-            <span ngfor>
-
-            </span>
-            
-          </span>
-        </span>
-      </span>
-    </tbody> -->
   </table>
 </div>

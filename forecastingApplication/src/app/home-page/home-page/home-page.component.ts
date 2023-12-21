@@ -76,7 +76,7 @@ export class HomePageComponent implements OnInit {
     //   } else {
     //     this.router.navigate(['/worksheet']); 
     //   }
-    // });
+    // }); 
     this.router.navigate(['/worksheet']);
   }
 
