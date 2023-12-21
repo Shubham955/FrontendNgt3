@@ -99,7 +99,7 @@ export class ForecastDisplayComponent implements OnInit {
   //       "gender": "female",
   //       "age": "40-60",
   //       "data": {
-  //         "2019": 0,
+  //         "2019": 0, 
   //         "2020": 0,
   //         "2021": 0
   //       }
@@ -150,7 +150,7 @@ export class ForecastDisplayComponent implements OnInit {
   ngOnInit(): void {
     this.getYearRange();
     this.populateParameters();
-    // this.outputObjectJson = this.generateSheet(this.inputObject);
+    this.outputObjectJson = this.generateSheet(this.inputObject);
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
   }
 
