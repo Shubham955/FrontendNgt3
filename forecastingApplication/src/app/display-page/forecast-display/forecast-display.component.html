@@ -24,13 +24,10 @@
     <!--Table Data -->
     <tbody>
       <tr *ngFor="let item of outputObjectJson.sheet">
-        <!-- <td>{{ item.country }}</td>
-        <td>{{ item.gender }}</td>
-        <td>{{ item.age }}</td> -->
-        <td *ngFor="let name of levelNamesArr" contenteditable="true">
+        <td *ngFor="let name of levelNamesArr" contenteditable="true" (input)="onCellEdit($event, name, item)">
           {{item[name]}}
         </td>
-        <td *ngFor="let year of timeRangeArr" contenteditable="true">
+        <td *ngFor="let year of timeRangeArr" contenteditable="true" (input)="onCellEdit($event, year, item)">
           {{ item.data[year] }}
         </td>
       </tr>

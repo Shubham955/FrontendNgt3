@@ -15,15 +15,10 @@ import { Time } from 'src/app/time';
 export class ForecastDisplayComponent implements OnInit {
   levelNamesArr: any = [];
   timeRangeArr: any = [];
-  levelCountArr: any = [];
-  years: any = [];
-  isOldWorksheet: boolean = false;
-  levelNameValueArr: any = [];
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     public worksheetParametersTransferService: WorksheetParametersTransferService) { }
-
 
   //   jsonData={
   //     "levels": {
@@ -52,15 +47,15 @@ export class ForecastDisplayComponent implements OnInit {
   inputObject = this.worksheetParametersTransferService.jsonSchemaCreate;
   outputObjectJson: any;
 
-//   jsonDataSchema = {
-//     "tableName": "testtable",
-//     "fields": [
-//       { "name": "country", "type": "String" },
-//       { "name": "gender", "type": "String" },
-//       { "name": "size", "type": "String" },
-//       { "name": "data", "type": "Object" }
-//     ]
-//   }
+  //   jsonDataSchema = {
+  //     "tableName": "testtable",
+  //     "fields": [
+  //       { "name": "country", "type": "String" },
+  //       { "name": "gender", "type": "String" },
+  //       { "name": "size", "type": "String" },
+  //       { "name": "data", "type": "Object" }
+  //     ]
+  //   }
 
   //  jsonDataLevels = {
   //   "sheet": [
@@ -166,95 +161,110 @@ export class ForecastDisplayComponent implements OnInit {
   }
 
   populateParameters() {
-    //this.levelNamesArr=['Country', 'Gender', 'Age Group'];//this.worksheetParametersTransferService.levelNames;
-    // this.levelCountArr=[2,2,3];//this.worksheetParametersTransferService.levelCount;
-    // this.levelNameValueArr=['Country 1','Country 2','Male','Female','Age 20-40','Age 40-60','Age 60-80'];
-
     this.inputObject.fields.slice(0, -1).forEach((ele: { name: any; }) => {
       console.log("input obj field", ele);
       this.levelNamesArr.push(ele.name);
     });
   }
 
-    //fetch code related function
-    loadWorksheet() {
-      this.inputObject//=response from db while fetching
-      //and then while fetching these 3 commands also to be issued as fetch button will be pressed 
-      //after page has got loaded, so ngInit commands need to be repeated here
-      this.getYearRange();
-      this.populateParameters();
-      this.outputObjectJson = this.generateSheet(this.inputObject);
+  //fetch code related function
+  loadWorksheet() {
+    this.inputObject//=response from db while fetching
+    //and then while fetching these 3 commands also to be issued as fetch button will be pressed 
+    //after page has got loaded, so ngInit commands need to be repeated here
+    this.getYearRange();
+    this.populateParameters();
+    this.outputObjectJson = this.generateSheet(this.inputObject);
+  }
+
+  onCellEdit(event: Event, key: string, item: any) {
+    const target = event.target as HTMLTableCellElement;
+    const value = target.innerText.trim();
+    if (key === 'data') {
+      item.data[key] = parseInt(value, 10);
+    } else {
+      const originalValue = item[key];
+      item[key] = value;
+      this.updateOtherItems(key, originalValue, value);
     }
+    console.log("edit occured",this.outputObjectJson);
+  }
 
+  updateOtherItems(key: string, oldValue: string, newValue: string) {
+    this.outputObjectJson.sheet.forEach((item: { [x: string]: string; }) => {
+      if (item[key] === oldValue) {
+        item[key] = newValue;
+      }
+    });
+  }
 
+  generateSheet(inputObject: { fields: Field[]; time: { start: any; end: number; }; }): Sheet {
+    const outputObject: Sheet = {
+      sheet: [],
+    };
 
-    generateSheet(inputObject: { fields: Field[]; time: { start: any; end: number; }; }): Sheet {
-      const outputObject: Sheet = {
-        sheet: [],
+    const combinations = this.generateCombinations(inputObject.fields);
+
+    let combinationCounts: Record<string, number> = {}; // Keep track of counts for each combination
+
+    combinations.forEach((combination: Field[]) => {
+      const emptydata: Record<string, number> = {};
+      const sheetEntry: SheetEntry = {
+        data: emptydata
+        ,
       };
 
-      const combinations = this.generateCombinations(inputObject.fields);
-
-      let combinationCounts: Record<string, number> = {}; // Keep track of counts for each combination
-
-      combinations.forEach((combination: Field[]) => {
-        const emptydata: Record<string, number> = {};
-        const sheetEntry: SheetEntry = {
-          data: emptydata
-          ,
-        };
-
-        combination.forEach((field: Field) => {
-          if (field.type === "Object") {
-            for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
-              sheetEntry['data'][year.toString()] = 0; // Initialize data for each year to 0
-            }
-          } else {
-            sheetEntry[field.name] = field.value as string;
+      combination.forEach((field: Field) => {
+        if (field.type === "Object") {
+          for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
+            sheetEntry['data'][year.toString()] = 0; // Initialize data for each year to 0
           }
-        });
-
-        const combinationKey = JSON.stringify(sheetEntry); // Use a unique key for each combination
-
-        if (!combinationCounts[combinationKey]) {
-          combinationCounts[combinationKey] = 1;
+        } else {
+          sheetEntry[field.name] = field.value as string;
         }
-
-        for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
-          sheetEntry['data'][year.toString()] = combinationCounts[combinationKey];
-        }
-
-        combinationCounts[combinationKey]++;
-        outputObject.sheet.push(sheetEntry);
       });
-      console.log(outputObject);
 
-      return outputObject;
-    }
+      const combinationKey = JSON.stringify(sheetEntry); // Use a unique key for each combination
 
-    generateCombinations(fields: Field[]): Field[][] {
-      const combinations: Field[][] = [];
+      if (!combinationCounts[combinationKey]) {
+        combinationCounts[combinationKey] = 1;
+      }
 
-      const generateCombination = (currentCombination: Field[], remainingFields: Field[]): void => {
-        if (remainingFields.length === 0) {
-          combinations.push([...currentCombination]);
-          return;
+      for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
+        sheetEntry['data'][year.toString()] = combinationCounts[combinationKey];
+      }
+
+      combinationCounts[combinationKey]++;
+      outputObject.sheet.push(sheetEntry);
+    });
+    console.log(outputObject);
+
+    return outputObject;
+  }
+
+  generateCombinations(fields: Field[]): Field[][] {
+    const combinations: Field[][] = [];
+
+    const generateCombination = (currentCombination: Field[], remainingFields: Field[]): void => {
+      if (remainingFields.length === 0) {
+        combinations.push([...currentCombination]);
+        return;
+      }
+
+      const currentField = remainingFields[0];
+      remainingFields = remainingFields.slice(1);
+
+      if (currentField) {
+        const numberOfValues = currentField.numberOfValues || 1; // Default to 1 if numberOfValues is not provided
+
+        for (let i = 0; i < numberOfValues; i++) {
+          generateCombination([...currentCombination, { name: currentField.name, type: currentField.type, value: `${currentField.name}${i + 1}` }], remainingFields);
         }
-
-        const currentField = remainingFields[0];
-        remainingFields = remainingFields.slice(1);
-
-        if (currentField) {
-          const numberOfValues = currentField.numberOfValues || 1; // Default to 1 if numberOfValues is not provided
-
-          for (let i = 0; i < numberOfValues; i++) {
-            generateCombination([...currentCombination, { name: currentField.name, type: currentField.type, value: `${currentField.name}${i + 1}` }], remainingFields);
-          }
-        }
-      };
+      }
+    };
 
     generateCombination([], fields);
 
-      return combinations;
-    }
+    return combinations;
   }
+}
