@@ -6,8 +6,8 @@ import { Injectable } from '@angular/core';
 export class WorksheetParametersTransferService {
   sheetName: any;
   timeSeriesType:any;
-  startRange:any;
-  endRange:any;
+  startRange:any=2019;
+  endRange:any=2021;
   levelNames:any=[];
   levelCount:any=[]; 
   jsonSchemaCreate: any;  

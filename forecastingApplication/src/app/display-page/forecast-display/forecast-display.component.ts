@@ -24,6 +24,16 @@ export class ForecastDisplayComponent implements OnInit {
     private router: Router,
     public worksheetParametersTransferService: WorksheetParametersTransferService) { }
 
+
+//   jsonData={
+//     "levels": {
+//       "level1": "Country",
+//       "level2": "Gender",
+//       "level3": "Age Group",
+//       "series": "year",
+//       "range-start": "2019",
+//       "range-end": "2023"
+//     },
   // inputObject = {
   // "tableName": "testtabletime",
   // "fields": [
@@ -42,104 +52,102 @@ export class ForecastDisplayComponent implements OnInit {
   inputObject = this.worksheetParametersTransferService.jsonSchemaCreate;
   outputObjectJson: any;
 
-  jsonDataSchema = {
-    "tableName": "testtable",
-    "fields": [
-      { "name": "country", "type": "String" },
-      { "name": "gender", "type": "String" },
-      { "name": "size", "type": "String" },
-      { "name": "data", "type": "Object" }
-    ]
-  }
+//   jsonDataSchema = {
+//     "tableName": "testtable",
+//     "fields": [
+//       { "name": "country", "type": "String" },
+//       { "name": "gender", "type": "String" },
+//       { "name": "size", "type": "String" },
+//       { "name": "data", "type": "Object" }
+//     ]
+//   }
 
-  jsonDataLevels = {
-    "sheet": [
-      {
-        "country": "a",
-        "gender": "male",
-        "age": "20-40",
-        "data": {
-          "2019": 0,
-          "2020": 0,
-          "2021": 0
-        }
-      },
-      {
-        "country": "a",
-        "gender": "male",
-        "age": "40-60",
-        "data": {
-          "2019": 0,
-          "2020": 0,
-          "2021": 0
-        }
-      },
-      {
-        "country": "a",
-        "gender": "female",
-        "age": "20-40",
-        "data": {
-          "2019": 0,
-          "2020": 0,
-          "2021": 0
-        }
-      },
-      {
-        "country": "a",
-        "gender": "female",
-        "age": "40-60",
-        "data": {
-          "2019": 0,
-          "2020": 0,
-          "2021": 0
-        }
-      },
-      {
-        "country": "b",
-        "gender": "male",
-        "age": "20-40",
-        "data": {
-          "2019": 0,
-          "2020": 0,
-          "2021": 0
-        }
-      },
-      {
-        "country": "b",
-        "gender": "male",
-        "age": "40-60",
-        "data": {
-          "2019": 0,
-          "2020": 0,
-          "2021": 0
-        }
-      },
-      {
-        "country": "b",
-        "gender": "female",
-        "age": "20-40",
-        "data": {
-          "2019": 0,
-          "2020": 0,
-          "2021": 0
-        }
-      },
-      {
-        "country": "b",
-        "gender": "female",
-        "age": "40-60",
-        "data": {
-          "2019": 0,
-          "2020": 0,
-          "2021": 0
-        }
-      }
-    ]
-  };
+//    jsonDataLevels = {
+//     "sheet": [
+//       {
+//         "country": "a",
+//         "gender": "male",
+//         "age": "20-40",
+//         "data": {
+//           "2019": 0,
+//           "2020": 0,
+//           "2021": 0
+//         }
+//       },
+//       {
+//         "country": "a",
+//         "gender": "male",
+//         "age": "40-60",
+//         "data": {
+//           "2019": 0,
+//           "2020": 0,
+//           "2021": 0
+//         }
+//       },
+//       {
+//         "country": "a",
+//         "gender": "female",
+//         "age": "20-40",
+//         "data": {
+//           "2019": 0,
+//           "2020": 0,
+//           "2021": 0
+//         }
+//       },
+//       {
+//         "country": "a",
+//         "gender": "female",
+//         "age": "40-60",
+//         "data": {
+//           "2019": 0,
+//           "2020": 0,
+//           "2021": 0
+//         }
+//       },
+//       {
+//         "country": "b",
+//         "gender": "male",
+//         "age": "20-40",
+//         "data": {
+//           "2019": 0,
+//           "2020": 0,
+//           "2021": 0
+//         }
+//       },
+//       {
+//         "country": "b",
+//         "gender": "male",
+//         "age": "40-60",
+//         "data": {
+//           "2019": 0,
+//           "2020": 0,
+//           "2021": 0
+//         }
+//       },
+//       {
+//         "country": "b",
+//         "gender": "female",
+//         "age": "20-40",
+//         "data": {
+//           "2019": 0,
+//           "2020": 0,
+//           "2021": 0
+//         }
+//       },
+//       {
+//         "country": "b",
+//         "gender": "female",
+//         "age": "40-60",
+//         "data": {
+//           "2019": 0,
+//           "2020": 0,
+//           "2021": 0
+//         }
+//       }
+//     ]
+//   };
 
   ngOnInit(): void {
-    // this.getLevels();
-    // this.getData();
     this.getYearRange();
     this.populateParameters();
     this.outputObjectJson = this.generateSheet(this.inputObject);
@@ -161,16 +169,14 @@ export class ForecastDisplayComponent implements OnInit {
     //this.levelNamesArr=['Country', 'Gender', 'Age Group'];//this.worksheetParametersTransferService.levelNames;
     // this.levelCountArr=[2,2,3];//this.worksheetParametersTransferService.levelCount;
     // this.levelNameValueArr=['Country 1','Country 2','Male','Female','Age 20-40','Age 40-60','Age 60-80'];
-
+    
     this.inputObject.fields.slice(0, -1).forEach((ele: { name: any; }) => {
       console.log("input obj field", ele);
       this.levelNamesArr.push(ele.name);
     });
-  }
 
   //fetch code related function
   loadWorksheet() {
-    this.isOldWorksheet = true;
     this.inputObject//=response from db while fetching
     //and then while fetching these 3 commands also to be issued as fetch button will be pressed 
     //after page has got loaded, so ngInit commands need to be repeated here
@@ -178,6 +184,8 @@ export class ForecastDisplayComponent implements OnInit {
     this.populateParameters();
     this.outputObjectJson=this.generateSheet(this.inputObject);
   }
+
+
 
   generateSheet(inputObject: { fields: Field[]; time: { start: any; end: number; }; }): Sheet {
     const outputObject: Sheet = {
@@ -248,18 +256,4 @@ export class ForecastDisplayComponent implements OnInit {
 
     return combinations;
   }
-
-  // getLevels() {
-  //   this.dataService.getLevels().subscribe((res)=>{
-  //       this.levels=res;
-  //       console.log("levels", this.levels);
-  //   })
-  // }
-
-  // getData() {
-  //   this.dataService.getData().subscribe((res)=>{
-  //     this.data=res;
-  //     console.log("data", this.data);
-  // })
-  // }
 }

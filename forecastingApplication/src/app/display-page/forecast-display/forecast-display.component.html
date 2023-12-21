@@ -1,12 +1,14 @@
-<header>
-  <h5>Nagarro Forecasting Prototype</h5>
+<header class="bg-success">
+  <h5 class="text-light">Nagarro Forecasting Prototype</h5>
 </header>
 
-<div class=" container mt-4">
-  <h4 class="text-centre">Forecast Worksheet</h4>
-  <label>Sheet Name: {{worksheetParametersTransferService.sheetName}}</label><br>
-  <button class="btn btn-success" title="Save Worksheet">Save</button>
-  <button class="btn btn-primary" title="Fetch saved Worksheets" onclick="loadWorksheet()">Fetch</button>
+<div class=" container mt-3">
+  <h4 class="text-center">Forecast Worksheet</h4>
+  <div class="my-3">
+    <button class="btn btn-success" title="Save Worksheet">Save</button>
+    <button class="btn btn-primary mx-3" title="Fetch saved Worksheets" (click)="loadWorksheet()">Fetch</button>
+    <button class="btn btn-secondary" routerLink="" title="Back">Back</button>
+  </div>
   <table>
     <thead>
       <tr>
@@ -18,7 +20,16 @@
         </th>
       </tr>
     </thead>
+    <!-- Generating Table -->
     <tbody>
+      <tr *ngFor="let item of outputObjectJson.sheet">
+        <td>{{ item.country }}</td>
+        <td>{{ item.gender }}</td>
+        <td>{{ item.age }}</td>
+        <td *ngFor="let year of timeRangeArr">
+          {{ item.data[year] }}
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
