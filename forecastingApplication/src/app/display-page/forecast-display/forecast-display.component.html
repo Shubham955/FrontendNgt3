@@ -23,9 +23,12 @@
     <!-- Generating Table -->
     <tbody>
       <tr *ngFor="let item of outputObjectJson.sheet">
-        <td>{{ item.country }}</td>
+        <!-- <td>{{ item.country }}</td>
         <td>{{ item.gender }}</td>
-        <td>{{ item.age }}</td>
+        <td>{{ item.age }}</td> -->
+        <td *ngFor="let name of levelNamesArr">
+          {{item[name]}}
+        </td>
         <td *ngFor="let year of timeRangeArr">
           {{ item.data[year] }}
         </td>
