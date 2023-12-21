@@ -52,105 +52,105 @@ export class ForecastDisplayComponent implements OnInit {
   inputObject = this.worksheetParametersTransferService.jsonSchemaCreate;
   outputObjectJson: any;
 
-//   jsonDataSchema = {
-//     "tableName": "testtable",
-//     "fields": [
-//       { "name": "country", "type": "String" },
-//       { "name": "gender", "type": "String" },
-//       { "name": "size", "type": "String" },
-//       { "name": "data", "type": "Object" }
-//     ]
-//   }
+  jsonDataSchema = {
+    "tableName": "testtable",
+    "fields": [
+      { "name": "country", "type": "String" },
+      { "name": "gender", "type": "String" },
+      { "name": "size", "type": "String" },
+      { "name": "data", "type": "Object" }
+    ]
+  }
 
-//    jsonDataLevels = {
-//     "sheet": [
-//       {
-//         "country": "a",
-//         "gender": "male",
-//         "age": "20-40",
-//         "data": {
-//           "2019": 0,
-//           "2020": 0,
-//           "2021": 0
-//         }
-//       },
-//       {
-//         "country": "a",
-//         "gender": "male",
-//         "age": "40-60",
-//         "data": {
-//           "2019": 0,
-//           "2020": 0,
-//           "2021": 0
-//         }
-//       },
-//       {
-//         "country": "a",
-//         "gender": "female",
-//         "age": "20-40",
-//         "data": {
-//           "2019": 0,
-//           "2020": 0,
-//           "2021": 0
-//         }
-//       },
-//       {
-//         "country": "a",
-//         "gender": "female",
-//         "age": "40-60",
-//         "data": {
-//           "2019": 0,
-//           "2020": 0,
-//           "2021": 0
-//         }
-//       },
-//       {
-//         "country": "b",
-//         "gender": "male",
-//         "age": "20-40",
-//         "data": {
-//           "2019": 0,
-//           "2020": 0,
-//           "2021": 0
-//         }
-//       },
-//       {
-//         "country": "b",
-//         "gender": "male",
-//         "age": "40-60",
-//         "data": {
-//           "2019": 0,
-//           "2020": 0,
-//           "2021": 0
-//         }
-//       },
-//       {
-//         "country": "b",
-//         "gender": "female",
-//         "age": "20-40",
-//         "data": {
-//           "2019": 0,
-//           "2020": 0,
-//           "2021": 0
-//         }
-//       },
-//       {
-//         "country": "b",
-//         "gender": "female",
-//         "age": "40-60",
-//         "data": {
-//           "2019": 0,
-//           "2020": 0,
-//           "2021": 0
-//         }
-//       }
-//     ]
-//   };
+   jsonDataLevels = {
+    "sheet": [
+      {
+        "country": "a",
+        "gender": "male",
+        "age": "20-40",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "a",
+        "gender": "male",
+        "age": "40-60",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "a",
+        "gender": "female",
+        "age": "20-40",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "a",
+        "gender": "female",
+        "age": "40-60",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "b",
+        "gender": "male",
+        "age": "20-40",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "b",
+        "gender": "male",
+        "age": "40-60",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "b",
+        "gender": "female",
+        "age": "20-40",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      },
+      {
+        "country": "b",
+        "gender": "female",
+        "age": "40-60",
+        "data": {
+          "2019": 0,
+          "2020": 0,
+          "2021": 0
+        }
+      }
+    ]
+  };
 
   ngOnInit(): void {
     this.getYearRange();
     this.populateParameters();
-    this.outputObjectJson = this.generateSheet(this.inputObject);
+    // this.outputObjectJson = this.generateSheet(this.inputObject);
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
   }
 
@@ -174,6 +174,7 @@ export class ForecastDisplayComponent implements OnInit {
       console.log("input obj field", ele);
       this.levelNamesArr.push(ele.name);
     });
+  }
 
   //fetch code related function
   loadWorksheet() {
@@ -252,7 +253,7 @@ export class ForecastDisplayComponent implements OnInit {
       }
     };
 
-    generateCombination([], fields);
+    generateCombination([], fields){}
 
     return combinations;
   }
