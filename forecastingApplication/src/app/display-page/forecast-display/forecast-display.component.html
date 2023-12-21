@@ -6,7 +6,7 @@
   <h4 class="text-center">Forecast Worksheet</h4>
   <div class="my-3">
     <button class="btn btn-success" title="Save Worksheet">Save</button>
-    <button class="btn btn-primary mx-3" title="Fetch saved Worksheets">Fetch</button>
+    <button class="btn btn-primary mx-3" title="Fetch saved Worksheets" (clivk)="loadWorksheet()">Fetch</button>
     <button class="btn btn-secondary" routerLink="" title="Back">Back</button>
   </div>
   <table>
@@ -23,13 +23,13 @@
     </thead>
     <!--Table Data -->
     <tbody>
-      <tr *ngFor="let item of jsonDataLevels.sheet">
-        <td>{{ item.country }}</td>
+      <tr *ngFor="let item of outputObjectJson.sheet">
+        <!-- <td>{{ item.country }}</td>
         <td>{{ item.gender }}</td>
-        <td>{{ item.age }}</td>
-        <!-- <td *ngFor="let level of levelNamesArr">
-          {{item[level]}}
-        </td> -->
+        <td>{{ item.age }}</td> -->
+        <td *ngFor="let name of levelNamesArr">
+          {{item[name]}}
+        </td>
         <td *ngFor="let year of timeRangeArr">
           {{ item.data[year] }}
         </td>
