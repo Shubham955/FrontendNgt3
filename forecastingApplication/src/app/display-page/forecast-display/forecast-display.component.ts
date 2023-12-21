@@ -24,56 +24,6 @@ export class ForecastDisplayComponent implements OnInit{
     private router: Router,
     public worksheetParametersTransferService:WorksheetParametersTransferService) { }
 
-  // jsonData = {
-  //   levels: {
-  //     level1: 'Country',
-  //     level2: 'Gender',
-  //     level3: 'Age Group',
-  //     series: 'year',
-  //     'range-start': '2019',
-  //     'range-end': '2023',
-  //   },
-  //   data: [
-  //     {
-  //       level1: 'country1',
-  //       male: {
-  //         '20-40': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //         '40-60': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //         '60-80': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //       },
-  //       female: {
-  //         '20-40': {
-  //           '2019': 19,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //         '40-60': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //         '60-80': {
-  //           '2019': 10,
-  //           '2020': 8,
-  //           '2021': 15,
-  //         },
-  //       },
-  //     },
-  //   ],
-  // };
-
   jsonData={
     "levels": {
       "level1": "Country",
@@ -193,6 +143,7 @@ export class ForecastDisplayComponent implements OnInit{
 
   loadWorksheet(){
     this.isOldWorksheet=true;
+    console.log(this.isOldWorksheet)
   }
 
   genNewSheetJson(){
@@ -206,18 +157,4 @@ export class ForecastDisplayComponent implements OnInit{
     newSheetJson=newSheetJson+'"series": "'+this.worksheetParametersTransferService.endRange+'",},';
 
   }
-
-  // getLevels() {
-  //   this.dataService.getLevels().subscribe((res)=>{
-  //       this.levels=res;
-  //       console.log("levels", this.levels);
-  //   })
-  // }
-
-  // getData() {
-  //   this.dataService.getData().subscribe((res)=>{
-  //     this.data=res;
-  //     console.log("data", this.data);
-  // })
-  // }
 }

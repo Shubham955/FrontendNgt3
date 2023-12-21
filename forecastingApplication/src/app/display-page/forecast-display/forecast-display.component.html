@@ -2,17 +2,16 @@
   <h5 class="text-light">Nagarro Forecasting Prototype</h5>
 </header>
 
-<div class=" container mt-4">
-  <h4 class="text-centre">Forecast Worksheet</h4>
-  <button class="btn btn-success" title="Save Worksheet">Save</button>
-  <button class="btn btn-primary" title="Fetch saved Worksheets" onclick="loadWorksheet()">Fetch</button>
+<div class=" container mt-3">
+  <h4 class="text-center">Forecast Worksheet</h4>
+  <div class="my-3">
+    <button class="btn btn-success" title="Save Worksheet">Save</button>
+    <button class="btn btn-primary mx-3" title="Fetch saved Worksheets" (click)="loadWorksheet()">Fetch</button>
+    <button class="btn btn-secondary" routerLink="" title="Back">Back</button>
+  </div>
   <table>
     <thead>
       <tr>
-        <!-- <th>{{ jsonData.levels.level1 }}</th>
-            <th>{{ jsonData.levels.level2 }}</th>
-            <th>{{ jsonData.levels.level3 }}</th>
-            <th *ngFor="let year of years" >{{ year }}</th>  -->
         <th *ngFor="let name of levelNamesArr">
           {{name}}
         </th>
@@ -21,19 +20,23 @@
         </th>
       </tr>
     </thead>
-    <tbody *ngIfElse="isOldWorksheet; newWorksheet">
-      <!-- old worksheet making tble from json recieved -->
 
-      <!-- <tr *ngFor="let item of jsonData.data">
-            <td *ngFor="let level of jsonData.levels | keyvalue">
-              {{ item[level.key] }}
-            </td>
-          </tr> -->
+    <!-- Generating Table -->
+    <tbody>
+      <tr *ngFor="let item of jsonData.sheet">
+        <td>{{ item.country }}</td>
+        <td>{{ item.gender }}</td>
+        <td>{{ item.age }}</td>
+        <td *ngFor="let year of timeRangeArr">
+          {{ item.data[year] }}
+        </td>
+      </tr>
+    </tbody>
+
+
+    <!-- <tbody *ngIfElse="isOldWorksheet; newWorksheet">
     </tbody>
     <tbody #newWorksheet>
-      <!-- tr
-                th loop till count of headers
-                  span of input box  -->
       <span *ngFor="let levCount of levelCountArr">
         <span *ngFor="let it1 of [].constructor(levCount); let i = index">
           <span *ngFor="let it2 of [].constructor(levCount); let i = index">
@@ -44,6 +47,6 @@
           </span>
         </span>
       </span>
-    </tbody>
+    </tbody> -->
   </table>
 </div>
