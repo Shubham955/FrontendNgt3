@@ -10,7 +10,7 @@ export class WorksheetParametersTransferService {
   endRange:any;
   levelNames:any=[];
   levelCount:any=[]; 
-  jsonSchemaCreate: any; 
+  jsonSchemaCreate: any;  
   
   constructor() { }
 }

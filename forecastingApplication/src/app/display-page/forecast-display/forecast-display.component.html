@@ -10,10 +10,6 @@
   <table>
     <thead>
       <tr>
-        <!-- <th>{{ jsonData.levels.level1 }}</th>
-            <th>{{ jsonData.levels.level2 }}</th>
-            <th>{{ jsonData.levels.level3 }}</th>
-            <th *ngFor="let year of years" >{{ year }}</th>  -->
         <th *ngFor="let name of levelNamesArr">
           {{name}}
         </th>
@@ -22,39 +18,7 @@
         </th>
       </tr>
     </thead>
-    <tbody *ngIfElse="isOldWorksheet; newWorksheet">
-      <!-- old worksheet making tble from json recieved -->
-
-      <!-- <tr *ngFor="let item of jsonData.data">
-            <td *ngFor="let level of jsonData.levels | keyvalue">
-              {{ item[level.key] }}
-            </td>
-          </tr> -->
+    <tbody>
     </tbody>
-    <tbody #newWorksheet>
-      <!-- tr
-                th loop till count of headers
-                  span of input box  -->
-      <span *ngFor="let levCount of levelCountArr">
-        <span *ngFor="let it1 of [].constructor(levCount); let i = index">
-          <span *ngFor="let it2 of [].constructor(levCount); let i = index">
-            <span ngfor>
-
-            </span>
-            
-          </span>
-        </span>
-      </span>
-    </tbody>
-    <!-- <tbody>
-          <tr *ngFor="let item of jsonData.data">
-            <td>{{ item.level1 }}</td>
-            <td *ngFor="let gender of ['male', 'female']">
-              <td *ngFor="let ageGroup of ['20-40', '40-60', '60-80']">
-                <td *ngFor="let year of years">{{ item[gender][ageGroup][year] }}</td>
-              </td>
-            </td>
-          </tr>
-        </tbody> -->
   </table>
 </div>
