@@ -23,13 +23,13 @@
     </thead>
     <!--Table Data -->
     <tbody>
-      <tr *ngFor="let item of jsonDataLevels.sheet">
-        <td>{{ item.country }}</td>
+      <tr *ngFor="let item of outputObjectJson.sheet">
+        <!-- <td>{{ item.country }}</td>
         <td>{{ item.gender }}</td>
-        <td>{{ item.age }}</td>
-        <!-- <td *ngFor="let level of levelNamesArr">
-          {{item[level]}}
-        </td> -->
+        <td>{{ item.age }}</td> -->
+        <td *ngFor="let name of levelNamesArr">
+          {{item[name]}}
+        </td>
         <td *ngFor="let year of timeRangeArr">
           {{ item.data[year] }}
         </td>
