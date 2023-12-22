@@ -18,6 +18,10 @@ export class HomePageComponent implements OnInit {
   levelNameArr: any=[];
   levelCountArr:any=[];
   sheetNameExists: boolean=false;
+  wordRegex = "^[a-zA-Z]*$";
+  numericRegex= "^[1-9]+[0-9]*$";
+  addLevelErrorsExist: boolean=false;
+  createSheetFormErrorsExist: boolean = false;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -28,14 +32,22 @@ export class HomePageComponent implements OnInit {
     this.worksheetForm = this.formBuilder.group({
       sheetName: [, [Validators.required]],
       timeSeriesType: [, [Validators.required]],
-      startRange: [, [Validators.required]],
-      endRange: [, [Validators.required]]
+      startRange: [, [Validators.required, Validators.pattern(this.numericRegex)]],
+      endRange: [, [Validators.required, Validators.pattern(this.numericRegex)]]
     });
     this.addLevelForm=this.formBuilder.group({
-      levelName: [,[Validators.required]],
-      levelValue: [,[Validators.required]]
+      levelName: [,[Validators.required, Validators.pattern(this.wordRegex)]],
+      levelValue: [,[Validators.required, Validators.pattern(this.numericRegex)]]
     });
-  } 
+  }
+
+  getWorksheetFormControl(name:any):AbstractControl | null{
+    return this.worksheetForm.get(name);
+  }
+
+  getAddLevelControl(name:any):AbstractControl | null{
+    return this.addLevelForm.get(name);
+  }
 
   //sets rating dropdown value 
   onSelected(event: any) {
@@ -45,6 +57,11 @@ export class HomePageComponent implements OnInit {
   }
 
   saveLevel(){
+    if(this.addLevelForm.invalid){
+      this.addLevelErrorsExist=true;
+      return;
+    }
+    this.addLevelErrorsExist=false;
     console.log(this.addLevelForm.value.levelName,"addForm",this.addLevelForm.value.levelValue);
     this.levelNumber = this.levelNumber + 1;
     this.levelNoArr.push(this.levelNumber);
@@ -59,6 +76,11 @@ export class HomePageComponent implements OnInit {
   }
 
   createWorksheet() {
+    if(this.worksheetForm.invalid){
+      this.createSheetFormErrorsExist=true;
+      return;
+    }
+    this.createSheetFormErrorsExist=false;
     this.worksheetParametersTransferService.sheetName=this.worksheetForm.value.sheetName;
     this.worksheetParametersTransferService.endRange=this.worksheetForm.value.endRange;
     this.worksheetParametersTransferService.startRange=this.worksheetForm.value.startRange;
@@ -69,15 +91,15 @@ export class HomePageComponent implements OnInit {
     let creationJsonData=this.getCreationTimeJson();
 
     this.worksheetParametersTransferService.jsonSchemaCreate=creationJsonData;
-    // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
-    //   console.log("result fetched",result);
-    //   if(result==-1){
-    //     this.sheetNameExists=true;
-    //   } else {
-    //     this.router.navigate(['/worksheet']); 
-    //   }
-    // }); 
-    this.router.navigate(['/worksheet']);
+    this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
+      console.log("result fetched",result);
+      if(result==-1){
+        this.sheetNameExists=true;
+      } else {
+        this.router.navigate(['/worksheet']); 
+      }
+    }); 
+    //this.router.navigate(['/worksheet']);
   }
 
   getCreationTimeJson(){

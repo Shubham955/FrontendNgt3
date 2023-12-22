@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormRecord } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormRecord, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WorksheetParametersTransferService } from 'src/app/services/worksheet-parameters-transfer.service';
 import { Field } from 'src/app/field';
 import { Sheet } from 'src/app/sheet';
 import { SheetEntry } from 'src/app/sheetentry';
 import { Time } from 'src/app/time';
+import { ForecastManagementService } from 'src/app/services/forecast-management.service';
 
 @Component({
   selector: 'app-forecast-display',
@@ -15,10 +16,14 @@ import { Time } from 'src/app/time';
 export class ForecastDisplayComponent implements OnInit {
   levelNamesArr: any = [];
   timeRangeArr: any = [];
+  fetchSheetForm!: FormGroup;
+  isFetchRequested: boolean = false;
+  wrongSheetName: boolean = false;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
-    public worksheetParametersTransferService: WorksheetParametersTransferService) { }
+    public worksheetParametersTransferService: WorksheetParametersTransferService,
+    private forecastManagementService: ForecastManagementService) { }
 
   //   jsonData={
   //     "levels": {
@@ -143,10 +148,20 @@ export class ForecastDisplayComponent implements OnInit {
   // };
 
   ngOnInit(): void {
+    //fetch sheet form
+    this.fetchSheetForm = this.formBuilder.group({
+      sheetName: [, [Validators.required]]
+    });
     this.getYearRange();
     this.populateParameters();
     this.outputObjectJson = this.generateSheet(this.inputObject);
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
+  }
+
+  //to get fields of form
+  //function name: after colon is return type of function that provides error detecting properties
+  getControl(name: any): AbstractControl | null {
+    return this.fetchSheetForm.get(name);
   }
 
   getYearRange() {
@@ -167,14 +182,28 @@ export class ForecastDisplayComponent implements OnInit {
     });
   }
 
-  //fetch code related function
+  //fetch button clicked
+  fetchClicked() {
+    this.isFetchRequested = true;
+  }
+
+  //open sheet code related function
   loadWorksheet() {
-    this.inputObject//=response from db while fetching
-    //and then while fetching these 3 commands also to be issued as fetch button will be pressed 
-    //after page has got loaded, so ngInit commands need to be repeated here
-    this.getYearRange();
-    this.populateParameters();
-    this.outputObjectJson = this.generateSheet(this.inputObject);
+    this.forecastManagementService.getTableSchema(this.worksheetParametersTransferService.sheetName).subscribe((result) => {
+      if (result == -1) {
+        this.wrongSheetName = true;
+      } else {
+        this.inputObject = result;
+        //using input object year range and nameArray filled
+        this.getYearRange();
+        this.populateParameters();
+        this.forecastManagementService.getTableData(this.worksheetParametersTransferService.sheetName).subscribe((fetchedTableData)=>{
+          this.outputObjectJson=fetchedTableData;
+        });
+      }
+    });
+    //fetch form closed
+    this.isFetchRequested=false;
   }
 
   onCellEdit(event: Event, key: string, item: any) {
@@ -187,7 +216,7 @@ export class ForecastDisplayComponent implements OnInit {
       item[key] = value;
       this.updateOtherItems(key, originalValue, value);
     }
-    console.log("edit occured",this.outputObjectJson);
+    console.log("edit occured", this.outputObjectJson);
   }
 
   updateOtherItems(key: string, oldValue: string, newValue: string) {

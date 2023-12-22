@@ -29,23 +29,79 @@
         <!-- time series range input boxes -->
         <div id="rangeDiv">
             <label id="rangeLabel">Range</label>
-            <input type="text" id="startRangeId" formControlName="startRange" placeholder="Start Range" required>-<input type="text"
-                id="endRangeId" formControlName="endRange" placeholder="End Range" required>
+            <input type="text" id="startRangeId" formControlName="startRange" placeholder="Start Range (numeric)"
+                required>-<input type="text" id="endRangeId" formControlName="endRange"
+                placeholder="End Range (numeric)" required>
         </div>
+        <br>
+
+        <!-- validations for sheet name, required validation -->
+        <span *ngIf="getWorksheetFormControl('sheetName')?.errors && getWorksheetFormControl('sheetName')?.touched">
+            <small class="text-danger" *ngIf="getWorksheetFormControl('sheetName')?.errors?.['required']">Sheet Name is
+                required</small>
+            <br>
+        </span>
+        <!-- validations for time series type, required validation -->
+        <span
+            *ngIf="getWorksheetFormControl('timeSeriesType')?.errors && getWorksheetFormControl('timeSeriesType')?.touched">
+            <small class="text-danger" *ngIf="getWorksheetFormControl('timeSeriesType')?.errors?.['required']">Time
+                Series is required</small>
+            <br>
+        </span>
+        <!-- validations for start range, required and numeric validation -->
+        <span *ngIf="getWorksheetFormControl('startRange')?.errors && getWorksheetFormControl('startRange')?.touched">
+            <small class="text-danger" *ngIf="getWorksheetFormControl('startRange')?.errors?.['required']">Start Range
+                is required</small>
+            <small class="text-danger" *ngIf="getWorksheetFormControl('startRange')?.errors?.['pattern']">Start Range
+                should be in numeric</small>
+            <br>
+        </span>
+        <!-- validations for end range, required and numeric validation -->
+        <span *ngIf="getWorksheetFormControl('endRange')?.errors && getWorksheetFormControl('endRange')?.touched">
+            <small class="text-danger" *ngIf="getWorksheetFormControl('endRange')?.errors?.['required']">End Range is
+                required</small>
+            <small class="text-danger" *ngIf="getWorksheetFormControl('endRange')?.errors?.['pattern']">End Range should
+                be in numeric</small>
+        <br>
+        </span>
+        <small class="text-danger" *ngIf="createSheetFormErrorsExist">Please resolve shown errors</small>
     </form>
+
     <label class="text-danger" *ngIf="sheetNameExists">Sheet Name already exists</label><br>
     <button class="btn btn-success" id="addBt" (click)="add()">Add Label</button>
     <!-- add level div -->
     <form *ngIf="isLevelToBeAdded" [formGroup]="addLevelForm" (ngSubmit)="saveLevel()">
+        <!-- level no -->
         <label for="levelNoId" id="levelNoLabel">Level No.</label><input type="text" id="levelNoId"
-            value="{{levelNumber+1}}" readonly><br>
+            value="{{levelNumber+1}}" readonly>
+        <br>
+        <!-- level name -->
         <label for="levelNameId" id="levelNameLabel">Name</label><input type="text" id="levelNameId"
-            placeholder="Level Name" formControlName="levelName" required><br>
+            placeholder="Level Name" formControlName="levelName" required> &nbsp;
+        <!-- level name validations -->
+        <span *ngIf="getAddLevelControl('levelName')?.errors && getAddLevelControl('levelName')?.touched">
+            <small class="text-danger" *ngIf="getAddLevelControl('levelName')?.errors?.['required']">Level Name is
+                required</small>
+            <small class="text-danger" *ngIf="getAddLevelControl('levelName')?.errors?.['pattern']">Level Name can only
+                contain letters</small>
+        </span>
+        <br>
+        <!-- level value -->
         <label for="levelValueId" id="levelValueLabel">Values</label><input type="text" id="levelValueId"
-            placeholder="Possible Values (Count)" formControlName="levelValue" required><br>
-        <input type="submit" class="btn btn-success" value="Save">
+            placeholder="Possible Values (Count)" formControlName="levelValue" required> &nbsp;
+        <!-- level value validations -->
+        <span *ngIf="getAddLevelControl('levelValue')?.errors && getAddLevelControl('levelValue')?.touched">
+            <small class="text-danger" *ngIf="getAddLevelControl('levelValue')?.errors?.['required']">Level Value is
+                required</small>
+            <small class="text-danger" *ngIf="getAddLevelControl('levelValue')?.errors?.['pattern']">Level Value should
+                neither be zero nor contain non digits</small>
+        </span>
+        <br>
+        <input type="submit" class="btn btn-success" value="Save"><br>
+        <small class="text-danger" *ngIf="addLevelErrorsExist">Please resolve shown errors</small>
     </form>
-    <hr> 
+    <hr>
+
     <table id="levelInputTable">
         <tr>
             <th>Level No.</th>

@@ -6,8 +6,28 @@
   <h4 class="text-center">Forecast Worksheet</h4>
   <div class="my-3">
     <button class="btn btn-success" title="Save Worksheet">Save</button>
-    <button class="btn btn-primary mx-3" title="Fetch saved Worksheets" (click)="loadWorksheet()">Fetch</button>
+    <button class="btn btn-primary mx-3" title="Fetch saved Worksheets" (click)="fetchClicked()">Fetch</button>
     <button class="btn btn-secondary" routerLink="" title="Back">Back</button>
+    <br>
+
+    <form *ngIf="isFetchRequested" [formGroup]="fetchSheetForm" (ngSubmit)="loadWorksheet()">
+      <br>
+      <div id="fetchFormDivId">
+        <label for="inputSheetName">Sheet Name</label>
+        <input type="text" id="inputSheetName" formControlName="sheetName">
+        <br>
+        <span *ngIf="getControl('sheetName')?.errors && getControl('sheetName')?.touched">
+          <small class="text-danger" *ngIf="getControl('sheetName')?.errors?.['required']">Sheet Name is
+            required</small>
+        </span>
+        <br>
+        <input type="submit" value="Open" class="btn btn-success">
+      </div>
+    </form>
+    <label class="text-danger" *ngIf="wrongSheetName">Please provide correct Sheet Name</label>
+    <br>
+
+    <Label>Current Sheet: {{worksheetParametersTransferService.sheetName}}</Label>
   </div>
   <table>
     <!-- Table Header -->
