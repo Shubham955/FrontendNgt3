@@ -91,15 +91,15 @@ export class HomePageComponent implements OnInit {
     let creationJsonData=this.getCreationTimeJson();
 
     this.worksheetParametersTransferService.jsonSchemaCreate=creationJsonData;
-    this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
-      console.log("result fetched",result);
-      if(result==-1){
-        this.sheetNameExists=true;
-      } else {
-        this.router.navigate(['/worksheet']); 
-      }
-    }); 
-    //this.router.navigate(['/worksheet']);
+    // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
+    //   console.log("result fetched",result);
+    //   if(result==-1){
+    //     this.sheetNameExists=true;
+    //   } else {
+    //     this.router.navigate(['/worksheet']); 
+    //   }
+    // }); 
+    this.router.navigate(['/worksheet']);
   }
 
   getCreationTimeJson(){
@@ -117,7 +117,7 @@ export class HomePageComponent implements OnInit {
 
     console.log(jsonSheetCreate);
 
-    let jsonSheet = {};
+    let jsonSheet = {}; 
     jsonSheet["tableName"]= this.worksheetParametersTransferService.sheetName;
     
     let fieldArray=[];

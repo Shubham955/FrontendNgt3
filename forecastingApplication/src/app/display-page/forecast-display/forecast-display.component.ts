@@ -62,7 +62,7 @@ export class ForecastDisplayComponent implements OnInit {
   //     ]
   //   }
 
-  //  jsonDataLevels = {
+  // jsonDataLevels = {
   //   "sheet": [
   //     {
   //       "country": "a",
@@ -99,7 +99,7 @@ export class ForecastDisplayComponent implements OnInit {
   //       "gender": "female",
   //       "age": "40-60",
   //       "data": {
-  //         "2019": 0, 
+  //         "2019": 0,
   //         "2020": 0,
   //         "2021": 0
   //       }
@@ -156,6 +156,7 @@ export class ForecastDisplayComponent implements OnInit {
     this.populateParameters();
     this.outputObjectJson = this.generateSheet(this.inputObject);
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
+    this.initializeLevelTotals();
   }
 
   //to get fields of form
@@ -175,6 +176,7 @@ export class ForecastDisplayComponent implements OnInit {
     console.log("Time Range", this.timeRangeArr);
   }
 
+  //populates level name array
   populateParameters() {
     this.inputObject.fields.slice(0, -1).forEach((ele: { name: any; }) => {
       console.log("input obj field", ele);
@@ -197,13 +199,13 @@ export class ForecastDisplayComponent implements OnInit {
         //using input object year range and nameArray filled
         this.getYearRange();
         this.populateParameters();
-        this.forecastManagementService.getTableData(this.worksheetParametersTransferService.sheetName).subscribe((fetchedTableData)=>{
-          this.outputObjectJson=fetchedTableData;
+        this.forecastManagementService.getTableData(this.worksheetParametersTransferService.sheetName).subscribe((fetchedTableData) => {
+          this.outputObjectJson = fetchedTableData;
         });
       }
     });
     //fetch form closed
-    this.isFetchRequested=false;
+    this.isFetchRequested = false;
   }
 
   onCellEdit(event: Event, key: string, item: any) {
@@ -217,6 +219,7 @@ export class ForecastDisplayComponent implements OnInit {
       this.updateOtherItems(key, originalValue, value);
     }
     console.log("edit occured", this.outputObjectJson);
+    this.initializeLevelTotals();
   }
 
   updateOtherItems(key: string, oldValue: string, newValue: string) {
@@ -225,6 +228,78 @@ export class ForecastDisplayComponent implements OnInit {
         item[key] = newValue;
       }
     });
+  }
+
+  getKey(item: SheetEntry) {
+    let key = ""
+    const lastLevel = this.levelNamesArr[this.levelNamesArr.length - 1];
+    for (const objKey in item) {
+      if (objKey !== "data" && objKey !== lastLevel) {
+        key = key + `${item[objKey]}-`
+      }
+    }
+    key = key.slice(0, key.length - 1);
+    console.log("itttttt", key);
+    return key;
+  }
+
+  // Function to get the key for a specific level in the current row
+  getLevelKey(item: SheetEntry, level: string): string {
+    return this.levelNamesArr.slice(0, this.levelNamesArr.indexOf(level) + 1).map((name: string | number) => item[name]).join("-");
+  }
+
+  levelTotals = {};
+
+  // Function to initialize the level totals object
+  initializeLevelTotals() {
+    this.levelTotals = {};
+
+    this.outputObjectJson.sheet.forEach((entry: SheetEntry) => {
+      this.levelNamesArr.forEach((level: string) => {
+        const levelKey = this.getLevelKey(entry, level);
+        if (!this.levelTotals[levelKey]) {
+          this.levelTotals[levelKey] = new Array(this.timeRangeArr.length).fill(0);
+        }
+
+        for (let i = 0; i < this.timeRangeArr.length; i++) {
+          this.levelTotals[levelKey][i] += entry.data[this.timeRangeArr[i]] || 0;
+        }
+      });
+    });
+    console.log("totals array", this.levelTotals);
+
+  }
+
+  fillCurrentTotalArray(prevKey: string, nextKey: string) {
+    console.log("start of diff curr total arra", prevKey, "nextkey", nextKey);
+    let currentDiffTotalRows = [];
+    try {
+      while (prevKey !== nextKey) {
+        let obj = {};
+
+        let splittedKey = prevKey.split('-');
+        obj['colOffset'] = splittedKey.length - 1;
+        obj['remainingLevels'] = this.levelNamesArr.length - splittedKey.length;
+        //generating male Total, female Total words etc
+        obj['totalColName'] = splittedKey[splittedKey.length - 1] + " " + "Total";
+        obj['totalColValue'] = this.levelTotals[prevKey];
+        currentDiffTotalRows.push(obj);
+
+        //-1 means last element mentioned and splice excludes 2nd index element
+        splittedKey = splittedKey.slice(0, -1);
+        prevKey = splittedKey.join('-');
+
+        let splittedNextKey = nextKey.split('-');
+        splittedNextKey = splittedNextKey.slice(0, -1);
+        nextKey = splittedNextKey.join('-');
+        console.log("rejoined", prevKey, "next key", nextKey);
+      }
+      console.log("cur tot arr", currentDiffTotalRows);
+    }
+    catch (error) {
+      console.log("err caught ", error);
+    }
+    return currentDiffTotalRows;
   }
 
   generateSheet(inputObject: { fields: Field[]; time: { start: any; end: number; }; }): Sheet {
@@ -246,7 +321,7 @@ export class ForecastDisplayComponent implements OnInit {
       combination.forEach((field: Field) => {
         if (field.type === "Object") {
           for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
-            sheetEntry['data'][year.toString()] = 0; // Initialize data for each year to 0
+            sheetEntry['data'][year.toString()] = Math.floor(Math.random() * 10); // Initialize data for each year to 0
           }
         } else {
           sheetEntry[field.name] = field.value as string;

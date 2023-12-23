@@ -43,14 +43,48 @@
     </thead>
     <!--Table Data -->
     <tbody>
-      <tr *ngFor="let item of outputObjectJson.sheet">
-        <td *ngFor="let name of levelNamesArr" contenteditable="true" (input)="onCellEdit($event, name, item)">
-          {{item[name]}}
-        </td>
-        <td *ngFor="let year of timeRangeArr" contenteditable="true" (input)="onCellEdit($event, year, item)">
-          {{ item.data[year] }}
-        </td>
-      </tr>
+      <ng-container *ngFor="let item of outputObjectJson.sheet; let i = index">
+        <!-- Show data rows -->
+        <tr>
+          <td *ngFor="let name of levelNamesArr" contenteditable="true" (input)="onCellEdit($event, name, item)">
+            {{ item[name] }}
+          </td>
+          <td *ngFor="let year of timeRangeArr" contenteditable="true" (input)="onCellEdit($event, year, item)">
+            {{ item.data[year] }}
+          </td>
+        </tr>
+
+        <ng-container *ngIf="i<outputObjectJson.sheet.length - 1">
+          <ng-container *ngIf="getKey(item) !== getKey(outputObjectJson.sheet[i + 1])">
+            <!-- Execute a function and store the result in an array -->
+            <ng-container
+              *ngIf="fillCurrentTotalArray(getKey(item), getKey(outputObjectJson.sheet[i + 1])) as dataArray">
+              <ng-container *ngFor="let data of dataArray">
+                <tr>
+                  <td *ngFor="let p of [].constructor(data['colOffset'])"></td>
+                  <td>{{data['totalColName']}}</td>
+                  <td *ngFor="let p of [].constructor(data['remainingLevels'])"></td>
+                  <td *ngFor="let yrTotal of data['totalColValue']">{{yrTotal}}</td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="i==outputObjectJson.sheet.length - 1">
+          <!-- Execute a function and store the result in an array -->
+          <ng-container *ngIf="fillCurrentTotalArray(getKey(item), '') as dataArray">
+            <ng-container *ngFor="let data of dataArray">
+              <tr>
+                <td *ngFor="let p of [].constructor(data['colOffset'])"></td>
+                <td>{{data['totalColName']}}</td>
+                <td *ngFor="let p of [].constructor(data['remainingLevels'])"></td>
+                <td *ngFor="let yrTotal of data['totalColValue']">{{yrTotal}}</td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
     </tbody>
   </table>
 </div>
