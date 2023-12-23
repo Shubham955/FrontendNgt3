@@ -12,4 +12,12 @@ export class ForecastManagementService {
   saveTableSchema(data:any){
     return this.httpClient.post(`${this.url}/schema`,data);
   }
+
+  getTableSchema(tableName:any){
+    return this.httpClient.get(`${this.url}/schema?table=${tableName}`);
+  }
+
+  getTableData(tableName:any){
+    return this.httpClient.get(`${this.url}/schema/:${tableName}`);
+  }
 }

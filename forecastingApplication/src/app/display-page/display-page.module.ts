@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { DisplayPageRoutingModule } from './display-page-routing.module';
 import { ForecastDisplayComponent } from './forecast-display/forecast-display.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import { ForecastDisplayComponent } from './forecast-display/forecast-display.co
   ],
   imports: [
     CommonModule,
-    DisplayPageRoutingModule
+    DisplayPageRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class DisplayPageModule { }
