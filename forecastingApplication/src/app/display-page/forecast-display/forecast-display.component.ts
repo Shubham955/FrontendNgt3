@@ -7,6 +7,9 @@ import { Sheet } from 'src/app/sheet';
 import { SheetEntry } from 'src/app/sheetentry';
 import { Time } from 'src/app/time';
 import { ForecastManagementService } from 'src/app/services/forecast-management.service';
+import { groupBy, reduce } from 'rxjs/operators';
+import { from, pipe } from 'rxjs';
+
 
 @Component({
   selector: 'app-forecast-display',
@@ -114,7 +117,7 @@ export class ForecastDisplayComponent implements OnInit {
   //         "2021": 0
   //       }
   //     },
-  //     {
+  //     { 
   //       "country": "b",
   //       "gender": "male",
   //       "age": "40-60",
@@ -211,9 +214,16 @@ export class ForecastDisplayComponent implements OnInit {
   onCellEdit(event: Event, key: string, item: any) {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
-    if (key === 'data') {
+      if ((event as KeyboardEvent).key === 'Backspace' || (event as KeyboardEvent).key === 'Delete') {
+        event.preventDefault();
+        const newValue : string =  ( event as KeyboardEvent).key === 'Backspace' ? value.slice(0,-1) : ""; 
+        // Process value or perform necessary actions
+        // Update your data accordingly
+        item[key] = newValue; // Update the value in your data
+      }
+    if (key === 'data') { //change in data values
       item.data[key] = parseInt(value, 10);
-    } else {
+    } else { //change in label values
       const originalValue = item[key];
       item[key] = value;
       this.updateOtherItems(key, originalValue, value);
@@ -335,14 +345,34 @@ export class ForecastDisplayComponent implements OnInit {
       }
 
       for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
-        sheetEntry['data'][year.toString()] = combinationCounts[combinationKey];
+        sheetEntry['data'][year.toString()] = 0;
       }
 
       combinationCounts[combinationKey]++;
       outputObject.sheet.push(sheetEntry);
     });
-    console.log(outputObject);
 
+    const totals: any = {};
+
+    outputObject.sheet.forEach((entry: any) => {
+      const key = `${entry.country}-${entry.gender}`;
+
+      if (!totals[key]) {
+        totals[key] = {};
+      }
+
+      for (const year in entry.data) {
+        if (!totals[key][year]) {
+          totals[key][year] = 0;
+        }
+
+        totals[key][year] += entry.data[year];
+      }
+    });
+
+    console.log(totals);
+
+    console.log(outputObject);
     return outputObject;
   }
 
