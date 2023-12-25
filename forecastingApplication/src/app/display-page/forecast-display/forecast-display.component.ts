@@ -287,17 +287,40 @@ export class ForecastDisplayComponent implements OnInit {
     reqdTotalArr=reqdTotalArr.map((x)=>x*value/reqdTotalArrSum);
     console.log("updated reqd total either from jth or j-1th",reqdTotalArr);
     //p is marker to iterate reqdTotalArr
-    let p=0;
-    this.outputObjectJson.sheet.forEach((iterItem: SheetEntry)=> {
-      if (currLevelTotalKey === this.getKey(iterItem) ) {
-        iterItem.data[changedYear]=reqdTotalArr[p];
-        p=p+1;
-      }
-    });
+    // let p=0;
+    // this.outputObjectJson.sheet.forEach((iterItem: SheetEntry)=> {
+    //   if (currLevelTotalKey === this.getKey(iterItem) ) {
+    //     iterItem.data[changedYear]=reqdTotalArr[p];
+    //     p=p+1;
+    //   }
+    // });
+    this.updateSheetWithAdjustedValues(currLevelTotalKey,changedYear,reqdTotalArr)
     console.log("after second last total adjust",this.outputObjectJson);
     this.initializeLevelTotals();
-    this.changeDetectorRef.detectChanges();
   }
+
+private updateSheetWithAdjustedValues(currLevelTotalKey: string, changedYear: any, reqdTotalArr: number[]) {
+  const updatedSheet = this.outputObjectJson.sheet.map((iterItem: SheetEntry) => {
+    if (currLevelTotalKey === this.getKey(iterItem)) {
+      return {
+        ...iterItem,
+        data: {
+          ...iterItem.data,
+          [changedYear]: reqdTotalArr.shift() || 0,
+        },
+      };
+    }
+    return iterItem;
+  });
+
+  this.outputObjectJson = {
+    ...this.outputObjectJson,
+    sheet: updatedSheet,
+  };
+
+  this.changeDetectorRef.detectChanges();
+}
+
 
   getKey(item: SheetEntry) {
     let key = ""
