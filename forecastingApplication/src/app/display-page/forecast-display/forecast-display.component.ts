@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormRecord, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WorksheetParametersTransferService } from 'src/app/services/worksheet-parameters-transfer.service';
@@ -22,11 +22,14 @@ export class ForecastDisplayComponent implements OnInit {
   fetchSheetForm!: FormGroup;
   isFetchRequested: boolean = false;
   wrongSheetName: boolean = false;
+  isDataFieldEdited: boolean=false;
+  firstTimeIntervalNotFilled: boolean=false;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     public worksheetParametersTransferService: WorksheetParametersTransferService,
-    private forecastManagementService: ForecastManagementService) { }
+    private forecastManagementService: ForecastManagementService,
+    private changeDetectorRef:ChangeDetectorRef) { }
 
   //   jsonData={
   //     "levels": {
@@ -214,21 +217,22 @@ export class ForecastDisplayComponent implements OnInit {
   onCellEdit(event: Event, key: string, item: any) {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
-      if ((event as KeyboardEvent).key === 'Backspace' || (event as KeyboardEvent).key === 'Delete') {
-        event.preventDefault();
-        const newValue : string =  ( event as KeyboardEvent).key === 'Backspace' ? value.slice(0,-1) : ""; 
-        // Process value or perform necessary actions
-        // Update your data accordingly
-        item[key] = newValue; // Update the value in your data
-      }
-    if (key === 'data') { //change in data values
-      item.data[key] = parseInt(value, 10);
-    } else { //change in label values
+    console.log("v",value,"k",key,"i",item);
+    //change in label values
       const originalValue = item[key];
       item[key] = value;
       this.updateOtherItems(key, originalValue, value);
-    }
     console.log("edit occured", this.outputObjectJson);
+    this.initializeLevelTotals();
+  }
+
+  onDataCellEdit(event: Event, key: string, item: any) {
+    this.isDataFieldEdited=true;
+    const target = event.target as HTMLTableCellElement;
+    const value = target.innerText.trim();
+    //change in data values
+      item.data[key] = parseInt(value, 10);
+    console.log("data edit occured", this.outputObjectJson);
     this.initializeLevelTotals();
   }
 
@@ -238,6 +242,61 @@ export class ForecastDisplayComponent implements OnInit {
         item[key] = newValue;
       }
     });
+  }
+
+  onTotalCellEdit(event: Event, j: number, item: any, data:any){
+    const target = event.target as HTMLTableCellElement;
+    const value = target.innerText.trim();
+    const intValue=parseInt(value, 10);
+    //second last level total has got changed
+    if(data['colOffset']==this.levelNamesArr.length-2){
+      this.adjustSecondLastLevelTotal(intValue, j, item, data);
+    } else if(data['colOffset']<this.levelNamesArr.length-2){//means previous levels to second last levels
+
+    }
+    //2 total dist meth if offst==levelcount-1 then below one else total dist
+    //get key nikalo current item ka
+    // then for loop over output json obj and get all items which match these keys and then from these matching items fetch data of jth year and store in array, and distribute total in ratio of elements of array if jth year data is empty then fetch from j-1th array and distribute
+  }
+
+  adjustSecondLastLevelTotal(value: number, j: number, item: any, data: any){
+    let currLevelTotalKey=this.getKey(item);
+    let reqdTotalArr: any[]=[];
+    let yearLessTotalArr: any[]=[];
+    let changedYear=this.timeRangeArr[j];
+    let prevYearExists=j==0?false:true;
+
+    let useYearLessTotal=false;
+    this.outputObjectJson.sheet.forEach((iterItem: SheetEntry)=> {
+      if (currLevelTotalKey === this.getKey(iterItem) ) {
+        reqdTotalArr.push( iterItem.data[changedYear] );
+        if(prevYearExists){
+          yearLessTotalArr.push( iterItem.data[changedYear-1] );
+        }
+        if(iterItem.data[changedYear]==0 && prevYearExists){
+          useYearLessTotal=true;
+        }
+      }
+    });
+    //now we know which array to use
+    if(useYearLessTotal){
+      reqdTotalArr=yearLessTotalArr;//[...arrName]
+    }
+    console.log("checking cur and prev yr total",reqdTotalArr,"prev one",yearLessTotalArr);
+    let reqdTotalArrSum=reqdTotalArr.reduce((acc,curValue)=>acc+curValue,0);
+    reqdTotalArr=reqdTotalArr.map((x)=>x*value/reqdTotalArrSum);
+    console.log("updated reqd total either from jth or j-1th",reqdTotalArr);
+    //p is marker to iterate reqdTotalArr
+    let p=0;
+    this.outputObjectJson.sheet.forEach((iterItem: SheetEntry)=> {
+      if (currLevelTotalKey === this.getKey(iterItem) ) {
+        iterItem.data[changedYear]=reqdTotalArr[p];
+        p=p+1;
+      }
+    });
+    console.log("after second last total adjust",this.outputObjectJson);
+    this.initializeLevelTotals();
+    this.changeDetectorRef.detectChanges();
   }
 
   getKey(item: SheetEntry) {
