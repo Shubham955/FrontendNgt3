@@ -343,24 +343,30 @@ private updateSheetWithAdjustedValues(currLevelTotalKey: string, changedYear: an
   levelTotals = {};
 
   // Function to initialize the level totals object
-  initializeLevelTotals() {
-    this.levelTotals = {};
-
-    this.outputObjectJson.sheet.forEach((entry: SheetEntry) => {
-      this.levelNamesArr.forEach((level: string) => {
-        const levelKey = this.getLevelKey(entry, level);
-        if (!this.levelTotals[levelKey]) {
-          this.levelTotals[levelKey] = new Array(this.timeRangeArr.length).fill(0);
-        }
-
-        for (let i = 0; i < this.timeRangeArr.length; i++) {
-          this.levelTotals[levelKey][i] += entry.data[this.timeRangeArr[i]] || 0;
-        }
-      });
-    });
-    console.log("totals array", this.levelTotals);
-
+initializeLevelTotals() {
+  this.levelTotals = {};
+  const grandTotalKey = 'GrandTotal';
+  if(!this.levelTotals[grandTotalKey]){
+    this.levelTotals[grandTotalKey] = new Array(this.timeRangeArr.length).fill(0);
   }
+  this.outputObjectJson.sheet.forEach((entry: SheetEntry) => {
+    this.levelNamesArr.forEach((level: string) => {
+      const levelKey = this.getLevelKey(entry, level);
+      if (!this.levelTotals[levelKey]) {
+        this.levelTotals[levelKey] = new Array(this.timeRangeArr.length).fill(0);
+      }
+
+      for (let i = 0; i < this.timeRangeArr.length; i++) {
+        this.levelTotals[levelKey][i] += entry.data[this.timeRangeArr[i]] || 0;
+        if(levelKey.split("-").length === 1){
+          this.levelTotals[grandTotalKey][i] += entry.data[this.timeRangeArr[i]] || 0;
+        }
+      }
+    });
+  });
+
+  console.log("totals array", this.levelTotals);
+}
 
   fillCurrentTotalArray(prevKey: string, nextKey: string) {
     console.log("start of diff curr total arra", prevKey, "nextkey", nextKey);
