@@ -24,6 +24,7 @@ export class ForecastDisplayComponent implements OnInit {
   wrongSheetName: boolean = false;
   isDataFieldEdited: boolean=false;
   firstTimeIntervalNotFilled: boolean=false;
+  isSavedIntoDatabase:boolean= false;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -326,7 +327,7 @@ private updateSheetWithAdjustedValues(currLevelTotalKey: string, changedYear: an
     let key = ""
     const lastLevel = this.levelNamesArr[this.levelNamesArr.length - 1];
     for (const objKey in item) {
-      if (objKey !== "data" && objKey !== lastLevel) {
+      if (objKey !== "data" && objKey !== lastLevel && objKey!="_id") {
         key = key + `${item[objKey]}-`
       }
     }
@@ -488,5 +489,27 @@ initializeLevelTotals() {
     generateCombination([], fields);
 
     return combinations;
+  }
+
+
+  saveSheet(){
+    let tableName= this.worksheetParametersTransferService.sheetName;
+    if(!this.isSavedIntoDatabase){ 
+      this.forecastManagementService.saveTableData(tableName, this.outputObjectJson).subscribe((result)=>{
+        let i=0;
+        for(let obj of result["sheet"]){
+          this.outputObjectJson.sheet[i]= {...this.outputObjectJson.sheet[i], "_id":obj["_id"]} 
+          i++;
+        }
+        this.isSavedIntoDatabase = !this.isSavedIntoDatabase;
+        console.log(this.outputObjectJson)
+      })
+      
+    }else{
+      // update the db
+      this.forecastManagementService.updateTableData(tableName, this.outputObjectJson).subscribe((result)=>{
+        console.log(result)
+      })
+    }
   }
 }
