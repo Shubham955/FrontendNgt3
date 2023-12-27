@@ -47,11 +47,11 @@
       <ng-container *ngFor="let item of outputObjectJson.sheet; let i = index">
         <!-- Show data rows -->
         <tr>
-          <td *ngFor="let name of levelNamesArr" contenteditable="true" (input)="onCellEdit($event, name, item)">
+          <td *ngFor="let name of levelNamesArr" contenteditable="true" (blur)="onCellEdit($event, name, item)">
             {{ item[name] }}
           </td>
-          <td *ngFor="let year of timeRangeArr" contenteditable="true" (input)="onDataCellEdit($event, year, item)">
-            {{ item.data[year] }}
+          <td *ngFor="let year of timeRangeArr" contenteditable="true" (blur)="onDataCellEdit($event, year, item)">
+            {{ item.data[year] | number:'1.0-2'}}
           </td>
         </tr>
 
@@ -66,7 +66,7 @@
                   <td>{{data['totalColName']}}</td>
                   <td *ngFor="let p of [].constructor(data['remainingLevels'])"></td>
                   <td contenteditable="true" *ngFor="let yrTotal of data['totalColValue'],let j=index"
-                    (input)="onTotalCellEdit($event, j, item, data)">{{yrTotal}}</td>
+                    (blur)="onTotalCellEdit($event, j, item, data)">{{yrTotal | number:'1.0-2'}}</td>
                 </tr>
               </ng-container>
             </ng-container>
@@ -82,7 +82,7 @@
                 <td>{{data['totalColName']}}</td>
                 <td *ngFor="let p of [].constructor(data['remainingLevels'])"></td>
                 <td contenteditable="true" *ngFor="let yrTotal of data['totalColValue'],let j=index"
-                    (input)="onTotalCellEdit($event, j, item, data)">{{yrTotal}}</td>
+                  (blur)="onTotalCellEdit($event, j, item, data)">{{yrTotal | number:'1.0-2'}}</td>
               </tr>
             </ng-container>
           </ng-container>
@@ -92,7 +92,8 @@
         <tr class="totalRowClass">
           <td>Grand Total</td>
           <td *ngFor="let p of [].constructor(levelNamesArr.length-1)"></td>
-          <td *ngFor="let grandYrTotal of levelTotals['GrandTotal']">{{grandYrTotal}}</td>
+          <td contenteditable="true" *ngFor="let grandYrTotal of levelTotals['GrandTotal'],let r=index"
+            (blur)="onGrandTotalEdit($event, r)">{{grandYrTotal | number:'1.0-2'}}</td>
         </tr>
       </ng-container>
     </tbody>

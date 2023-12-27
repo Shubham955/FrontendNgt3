@@ -260,7 +260,7 @@ export class ForecastDisplayComponent implements OnInit {
       let itemKeyArr=itemKey.split('-');
       //array is 0 indexed but levels in real are 1 indexed
       let curTotalKey=itemKeyArr.splice(0,data['colOffset'] + 1).join('-');
-      this.adjustOtherLevelTotal(intValue, j, item, data['colOffset'] + 1, curTotalKey);
+      this.adjustOtherLevelTotal(intValue, j, data['colOffset'] + 1, curTotalKey);
     }
     //2 total dist meth if offst==levelcount-1 then below one else total dist
     //get key nikalo current item ka
@@ -314,7 +314,7 @@ export class ForecastDisplayComponent implements OnInit {
           ...iterItem,
           data: {
             ...iterItem.data,
-            [changedYear]: Math.round(reqdTotalArr.shift() || 0),
+            [changedYear]: (reqdTotalArr.shift() || 0),
           },
         };
       }
@@ -329,7 +329,7 @@ export class ForecastDisplayComponent implements OnInit {
     this.changeDetectorRef.detectChanges();
   }
 
-  adjustOtherLevelTotal(intValue: number, j: number, item: any, curLevel: number, curTotalLevelKey: string) {
+  adjustOtherLevelTotal(intValue: number, j: number, curLevel: number, curTotalLevelKey: string) {
     console.log("adj other level started",curLevel);
     //as length of levelTotals key comparison so current offset+2 done to tell that now going for 2nd level
     let nextLevelNum = curLevel + 1;
@@ -369,7 +369,7 @@ export class ForecastDisplayComponent implements OnInit {
         if ((nextLevelNum == this.levelNamesArr.length - 1)) {
           this.adjustSecondLastLevelTotal(this.levelTotals[levelTotalKey][j], j, levelTotalKey);
         } else{
-          this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, item, nextLevelNum, levelTotalKey);
+          this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, nextLevelNum, levelTotalKey);
         }
       }
       //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
@@ -379,6 +379,61 @@ export class ForecastDisplayComponent implements OnInit {
     //   [reqdKeysArr.shift()]: nextLevelTotal.shift(),
     // };
 
+  }
+
+  onGrandTotalEdit(event: Event, j: number){
+    const target = event.target as HTMLTableCellElement;
+    const value = target.innerText.trim();
+    const intValue = parseInt(value, 10);
+
+    let nextLevelNum = 1;
+    let yearLessTotalArr: any[] = [];
+    let prevYearExists = j == 0 ? false : true;
+    let useYearLessTotal = false;
+
+    let nextLevelTotal: any[] = [];
+    //let reqdKeysArr: any[] = [];
+    for (const levelTotalKey in this.levelTotals) {
+      if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey!='GrandTotal'){
+        //console.log("GRAND TOTAL ADJUST me iterTotal hai yeh", levelTotalKey, "year data fetched", this.levelTotals[levelTotalKey][j]);
+        nextLevelTotal.push(this.levelTotals[levelTotalKey][j]);
+        //reqdKeysArr.push(levelTotalKey);
+        // if (prevYearExists) {
+        //   yearLessTotalArr.push(this.levelTotals[levelTotalKey][j-1]);
+        // }
+        // if (this.levelTotals[levelTotalKey][j] == 0 && prevYearExists) {
+        //   useYearLessTotal = true;
+        // }
+      }
+      //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
+    }
+
+    let nextLevelTotalCopy=[];
+    if (useYearLessTotal) {
+      for(let q=0;q<yearLessTotalArr.length;q++){
+        nextLevelTotalCopy[q]=yearLessTotalArr[q];
+      }
+      nextLevelTotal=yearLessTotalArr;
+    }
+
+    let nextLevelTotalSum = nextLevelTotal.reduce((acc, curValue) => acc + curValue, 0);
+    nextLevelTotal = nextLevelTotal.map((x) => x * intValue / nextLevelTotalSum);
+
+    // let levelTotalsCopy={};
+    // for(const obj in this.levelTotals){
+    //   for(let q=0;q<this.levelTotals[obj].length;q++){}
+    // }
+    //reallocate to key in totals
+    for (const levelTotalKey in this.levelTotals) {
+      if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey!='GrandTotal'){
+        console.log("CALL AHEAD to",nextLevelNum);
+        this.levelTotals[levelTotalKey][j] = nextLevelTotal.shift();
+        console.log("GRAND TOTAL ADJUST me totals array after if assign", this.levelTotals);
+        this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, nextLevelNum, levelTotalKey);
+      }
+      //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
+    }
+    console.log("back on the starting",this.levelTotals);
   }
 
   getKey(item: SheetEntry) {
