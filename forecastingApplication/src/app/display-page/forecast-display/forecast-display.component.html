@@ -9,6 +9,11 @@
     <strong>{{message}}</strong>
   </div>
   </div>
+    <!-- spinner -->
+    <div class="text-center mb-2" *ngIf="loadSpinner">
+      <div class="lds-spinner text-center" ><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+    <!-- spinner -->
   <!-- notification bar end -->
   <h4 class="text-center">Forecast Worksheet</h4>
   <div class="my-3">

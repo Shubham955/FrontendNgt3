@@ -34,6 +34,10 @@
                         <p class="card-text">Create a new worksheet by configuring levels.</p>
                         <div class="container">
                             <form [formGroup]="worksheetForm" (ngSubmit)="createWorksheet()">
+                                <div class="text-end">
+                                    <small class="text-danger" *ngIf="createSheetFormErrorsExist">Please resolve shown errors</small>
+                                    <input type="submit" class="btn btn-warning" id="createBt" value="Create Sheet">
+                                </div>
                                 <div class="row">
                                     <div id="sheetInfo" class="col">
                                         <label for="sheetNameId" class="form-label">Name</label>
@@ -99,8 +103,7 @@
                                 </span>
                             </div>
                             </div>
-                        <small class="text-danger" *ngIf="createSheetFormErrorsExist">Please resolve shown errors</small>
-                        <input type="submit" class="btn btn-success" id="createBt" value="Create Sheet">
+                        
                     </form>
                     <label class="text-danger" *ngIf="sheetNameExists">Sheet Name already exists</label><br>
                         <div class="row">
