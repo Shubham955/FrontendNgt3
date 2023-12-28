@@ -28,6 +28,7 @@ export class ForecastDisplayComponent implements OnInit {
   // firstTimeIntervalNotFilled: boolean=false;
   isSavedIntoDatabase:boolean= false;
   message:string='';
+  loadSpinner:boolean = false;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -515,6 +516,7 @@ export class ForecastDisplayComponent implements OnInit {
 
 
   saveSheet(){
+    this.loadSpinner= !this.loadSpinner;
     let tableName= this.worksheetParametersTransferService.sheetName;
     if(!this.isSavedIntoDatabase){ 
       this.forecastManagementService.saveTableData(tableName, this.outputObjectJson).subscribe((result)=>{
@@ -525,6 +527,7 @@ export class ForecastDisplayComponent implements OnInit {
         }
         this.isSavedIntoDatabase = !this.isSavedIntoDatabase;
         console.log(this.outputObjectJson)
+        this.loadSpinner= !this.loadSpinner;
         this.message= "Data saved into Database successfully!!"; 
         this.eraseNotification()  
       },(error)=>{
@@ -536,6 +539,7 @@ export class ForecastDisplayComponent implements OnInit {
       // update the db
       this.forecastManagementService.updateTableData(tableName, this.outputObjectJson).subscribe((result)=>{
         console.log(result)
+        this.loadSpinner= !this.loadSpinner;
         this.message= "Data saved into Database successfully!!";   
         this.eraseNotification()  
       },(error)=>{
