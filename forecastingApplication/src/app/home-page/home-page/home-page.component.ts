@@ -92,6 +92,16 @@ export class HomePageComponent implements OnInit {
     let creationJsonData=this.getCreationTimeJson();
 
     this.worksheetParametersTransferService.jsonSchemaCreate=creationJsonData;
+
+    // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
+    //   console.log("result fetched",result);
+    //   if(result==-1){
+    //     this.sheetNameExists=true;
+    //   } else {
+    //     this.router.navigate(['/worksheet']); 
+    //   }
+    // }); 
+//     this.router.navigate(['/worksheet']);
     this.forecastManagementService.saveTableSchema(creationJsonData).subscribe({
       next: (result)=>{
         console.log("result fetched",result);
@@ -123,7 +133,6 @@ export class HomePageComponent implements OnInit {
     //     this.sheetNameExists=true;
     //     this.router.navigate(['/']);
     // }); 
-    
   }
 
   getCreationTimeJson(){
