@@ -50,10 +50,13 @@ export class ForecastDisplayComponent implements OnInit {
       this.forecastManagementService.getTableData(this.worksheetParametersTransferService.jsonSchemaCreate["tableName"]).subscribe(
         (res)=>{
           this.outputObjectJson = res;
+          this.initializeLevelTotals();
+
         }
       )
     }else{
       this.outputObjectJson = this.generateSheet(this.inputObject);
+      this.initializeLevelTotals();
       this.forecastManagementService.saveTableSchema(this.inputObject).subscribe(
         ()=>{
           console.log("Schema Saved");
@@ -62,7 +65,6 @@ export class ForecastDisplayComponent implements OnInit {
       );
     }
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
-    this.initializeLevelTotals();
 
   }
 
