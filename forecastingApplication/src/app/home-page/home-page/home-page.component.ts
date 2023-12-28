@@ -22,6 +22,7 @@ export class HomePageComponent implements OnInit {
   numericRegex= "^[1-9]+[0-9]*$";
   addLevelErrorsExist: boolean=false;
   createSheetFormErrorsExist: boolean = false;
+  loadForm!: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -39,6 +40,9 @@ export class HomePageComponent implements OnInit {
       levelName: [,[Validators.required, Validators.pattern(this.wordRegex)]],
       levelValue: [,[Validators.required, Validators.pattern(this.numericRegex)]]
     });
+    this.loadForm = this.formBuilder.group({
+      sheetName : [,[Validators.required,Validators.pattern(this.wordRegex)]]
+    })
   }
 
   getWorksheetFormControl(name:any):AbstractControl | null{
@@ -142,4 +146,29 @@ export class HomePageComponent implements OnInit {
 
     return jsonSheet;
   }
+
+  loadWorkSheet(){
+    const tableName = this.loadForm.value.sheetName;
+    this.forecastManagementService.getTableSchema(tableName).subscribe(
+      (res)=>{
+        this.worksheetParametersTransferService.jsonSchemaCreate = res;
+        this.worksheetParametersTransferService.levelNames = [];
+        this.worksheetParametersTransferService.levelCount = 0;
+        this.worksheetParametersTransferService.endRange = res["time"]["end"];
+        this.worksheetParametersTransferService.startRange = res["time"]["start"];
+        this.worksheetParametersTransferService.timeSeriesType = res["time"]["series"];
+        res["fields"].forEach((field: any)=>{
+          this.worksheetParametersTransferService.levelNames.push(field);
+          this.worksheetParametersTransferService.levelCount+=1;
+        })
+        this.worksheetParametersTransferService.loadingSheet = true;        
+      },
+      (err) =>{
+        console.error(err);
+      },
+      ()=>{
+        this.router.navigate(["/worksheet"]);
+      }
+    )
+  } 
 }

@@ -18,6 +18,6 @@ export class ForecastManagementService {
   }
 
   getTableData(tableName:any){
-    return this.httpClient.get(`${this.url}/schema/:${tableName}`);
+    return this.httpClient.get(`${this.url}/sheet/${tableName}`);
   }
 }

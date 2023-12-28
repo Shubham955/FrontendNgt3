@@ -11,6 +11,6 @@ export class WorksheetParametersTransferService {
   levelNames:any=[];
   levelCount:any=[]; 
   jsonSchemaCreate: any;  
-  
+  loadingSheet: boolean = false;
   constructor() { }
 }

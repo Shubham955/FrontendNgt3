@@ -30,137 +30,27 @@ export class ForecastDisplayComponent implements OnInit {
     public worksheetParametersTransferService: WorksheetParametersTransferService,
     private forecastManagementService: ForecastManagementService,
     private changeDetectorRef: ChangeDetectorRef) { }
-
-  //   jsonData={
-  //     "levels": {
-  //       "level1": "Country",
-  //       "level2": "Gender",
-  //       "level3": "Age Group",
-  //       "series": "year",
-  //       "range-start": "2019",
-  //       "range-end": "2023"
-  //     },
-  // inputObject = {
-  // "tableName": "testtabletime",
-  // "fields": [
-  //   { "name": "country", "type": "String", "numberOfValues": 2 },
-  //   { "name": "gender", "type": "String", "numberOfValues": 2 },
-  //   { "name": "age", "type": "String", "numberOfValues": 3 },
-  //   { "name": "data", "type": "Object" } 
-  // ],
-  // "time": {
-  //   "series": "year",
-  //   "start": 2019,
-  //   "end": 2021
-  // }
-  // };
-
   inputObject = this.worksheetParametersTransferService.jsonSchemaCreate;
   outputObjectJson: any;
 
-  //   jsonDataSchema = {
-  //     "tableName": "testtable",
-  //     "fields": [
-  //       { "name": "country", "type": "String" },
-  //       { "name": "gender", "type": "String" },
-  //       { "name": "size", "type": "String" },
-  //       { "name": "data", "type": "Object" }
-  //     ]
-  //   }
-
-  // jsonDataLevels = {
-  //   "sheet": [
-  //     {
-  //       "country": "a",
-  //       "gender": "male",
-  //       "age": "20-40",
-  //       "data": {
-  //         "2019": 0,
-  //         "2020": 0,
-  //         "2021": 0
-  //       }
-  //     },
-  //     {
-  //       "country": "a",
-  //       "gender": "male",
-  //       "age": "40-60",
-  //       "data": {
-  //         "2019": 0,
-  //         "2020": 0,
-  //         "2021": 0
-  //       }
-  //     },
-  //     {
-  //       "country": "a",
-  //       "gender": "female",
-  //       "age": "20-40",
-  //       "data": {
-  //         "2019": 0,
-  //         "2020": 0,
-  //         "2021": 0
-  //       }
-  //     },
-  //     {
-  //       "country": "a",
-  //       "gender": "female",
-  //       "age": "40-60",
-  //       "data": {
-  //         "2019": 0,
-  //         "2020": 0,
-  //         "2021": 0
-  //       }
-  //     },
-  //     {
-  //       "country": "b",
-  //       "gender": "male",
-  //       "age": "20-40",
-  //       "data": {
-  //         "2019": 0,
-  //         "2020": 0,
-  //         "2021": 0
-  //       }
-  //     },
-  //     { 
-  //       "country": "b",
-  //       "gender": "male",
-  //       "age": "40-60",
-  //       "data": {
-  //         "2019": 0,
-  //         "2020": 0,
-  //         "2021": 0
-  //       }
-  //     },
-  //     {
-  //       "country": "b",
-  //       "gender": "female",
-  //       "age": "20-40",
-  //       "data": {
-  //         "2019": 0,
-  //         "2020": 0,
-  //         "2021": 0
-  //       }
-  //     },
-  //     {
-  //       "country": "b",
-  //       "gender": "female",
-  //       "age": "40-60",
-  //       "data": {
-  //         "2019": 0,
-  //         "2020": 0,
-  //         "2021": 0
-  //       }
-  //     }
-  //   ]
-  // };
-
   ngOnInit(): void {
-    //fetch sheet form
-    this.fetchSheetForm = this.formBuilder.group({
-      sheetName: [, [Validators.required]]
-    });
     this.getYearRange();
     this.populateParameters();
-    this.outputObjectJson = this.generateSheet(this.inputObject);
+    if(this.worksheetParametersTransferService.loadingSheet){
+      this.forecastManagementService.getTableData(this.worksheetParametersTransferService.jsonSchemaCreate["tableName"]).subscribe(
+        (res)=>{
+          this.outputObjectJson = res;
+        }
+      )
+    }else{
+      this.outputObjectJson = this.generateSheet(this.inputObject);
+      this.forecastManagementService.saveTableSchema(this.inputObject).subscribe(
+        ()=>{
+          console.log("Schema Saved");
+          
+        }
+      );
+    }
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
     this.initializeLevelTotals();
   }
