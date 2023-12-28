@@ -94,14 +94,18 @@
             </ng-container>
           </ng-container>
         </ng-container>
-      </ng-container>
-      <ng-container>
-        <tr class="totalRowClass">
-          <td>Grand Total</td>
-          <td *ngFor="let p of [].constructor(levelNamesArr.length-1)"></td>
-          <td contenteditable="true" *ngFor="let grandYrTotal of levelTotals['GrandTotal'],let r=index"
-            (blur)="onGrandTotalEdit($event, r)">{{grandYrTotal | number:'1.0-2'}}</td>
-        </tr>
+        <ng-container *ngIf="i==outputObjectJson.sheet.length - 1">
+          <ng-container *ngIf="fillCurrentTotalArray('', '') as dataArray">
+            <ng-container *ngFor="let data of dataArray">
+              <tr class="totalRowClass">
+                <td>Grand Total</td>
+                <td *ngFor="let p of [].constructor(levelNamesArr.length-1)"></td>
+                <td contenteditable="true" *ngFor="let grandYrTotal of data['totalColValue'],let r=index"
+                  (blur)="onGrandTotalEdit($event, r)">{{grandYrTotal | number:'1.0-2'}}</td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </ng-container>
       </ng-container>
     </tbody>
   </table>

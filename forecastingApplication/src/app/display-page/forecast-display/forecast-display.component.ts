@@ -403,56 +403,45 @@ export class ForecastDisplayComponent implements OnInit {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
     const intValue = parseInt(value, 10);
+    console.log("start of GrandTotalEdit with intValue",intValue," ",j);
 
     let nextLevelNum = 1;
     let yearLessTotalArr: any[] = [];
     let prevYearExists = j == 0 ? false : true;
     let useYearLessTotal = false;
-
     let nextLevelTotal: any[] = [];
-    //let reqdKeysArr: any[] = [];
+
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey!='GrandTotal'){
-        //console.log("GRAND TOTAL ADJUST me iterTotal hai yeh", levelTotalKey, "year data fetched", this.levelTotals[levelTotalKey][j]);
         nextLevelTotal.push(this.levelTotals[levelTotalKey][j]);
-        //reqdKeysArr.push(levelTotalKey);
-        // if (prevYearExists) {
-        //   yearLessTotalArr.push(this.levelTotals[levelTotalKey][j-1]);
-        // }
-        // if (this.levelTotals[levelTotalKey][j] == 0 && prevYearExists) {
-        //   useYearLessTotal = true;
-        // }
+        if(prevYearExists){
+          yearLessTotalArr.push(this.levelTotals[levelTotalKey][j-1]);
+        }
+        if(prevYearExists && this.levelTotals[levelTotalKey][j]==0){
+          useYearLessTotal=true;
+        }
+        console.log("GRAND TOTAL ADJUST me iterTotal hai yeh", levelTotalKey, "year data fetched", nextLevelTotal[j]);
       }
-      //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
     }
 
-    let nextLevelTotalCopy=[];
     if (useYearLessTotal) {
-      for(let q=0;q<yearLessTotalArr.length;q++){
-        nextLevelTotalCopy[q]=yearLessTotalArr[q];
-      }
       nextLevelTotal=yearLessTotalArr;
     }
 
     let nextLevelTotalSum = nextLevelTotal.reduce((acc, curValue) => acc + curValue, 0);
     nextLevelTotal = nextLevelTotal.map((x) => x * intValue / nextLevelTotalSum);
 
-    // let levelTotalsCopy={};
-    // for(const obj in this.levelTotals){
-    //   for(let q=0;q<this.levelTotals[obj].length;q++){}
-    // }
     //reallocate to key in totals
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey!='GrandTotal'){
-        console.log("CALL AHEAD to",nextLevelNum);
         this.levelTotals[levelTotalKey][j] = nextLevelTotal.shift();
         console.log("GRAND TOTAL ADJUST me totals array after if assign", this.levelTotals);
+        console.log("GrToAd CALL AHEAD to",nextLevelNum);
         this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, nextLevelNum, levelTotalKey);
-      }
-      //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
+      }  
     }
-    console.log("back on the starting",this.levelTotals);
   }
+
 
   getKey(item: SheetEntry) {
     let key = ""
@@ -503,6 +492,12 @@ export class ForecastDisplayComponent implements OnInit {
   fillCurrentTotalArray(prevKey: string, nextKey: string) {
     console.log("start of diff curr total arra", prevKey, "nextkey", nextKey);
     let currentDiffTotalRows = [];
+    if(prevKey=='' && nextKey==''){
+      let obj = {};
+      obj['totalColValue'] = this.levelTotals['GrandTotal'];
+      currentDiffTotalRows.push(obj);
+      return currentDiffTotalRows;
+    }
     try {
       while (prevKey !== nextKey) {
         let obj = {};
