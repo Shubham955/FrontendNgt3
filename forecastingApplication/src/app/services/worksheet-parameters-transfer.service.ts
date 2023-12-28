@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,4 +14,15 @@ export class WorksheetParametersTransferService {
   jsonSchemaCreate: any;  
   
   constructor() { }
+
+  notification:string=''
+
+  public notify(message:string){
+    this.notification= message;
+  }
+
+  getNotification(){
+    return this.notification;
+  }
+
 }

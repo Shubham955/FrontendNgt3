@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnChanges, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormRecord, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WorksheetParametersTransferService } from 'src/app/services/worksheet-parameters-transfer.service';
@@ -24,12 +24,17 @@ export class ForecastDisplayComponent implements OnInit {
   wrongSheetName: boolean = false;
   isDataFieldEdited: boolean = false;
   firstTimeIntervalNotFilled: boolean = false;
+  isDataFieldEdited: boolean=false;
+  firstTimeIntervalNotFilled: boolean=false;
+  isSavedIntoDatabase:boolean= false;
+  message:string='';
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     public worksheetParametersTransferService: WorksheetParametersTransferService,
     private forecastManagementService: ForecastManagementService,
-    private changeDetectorRef: ChangeDetectorRef) { }
+    private changeDetectorRef: ChangeDetectorRef) {
+     }
 
   //   jsonData={
   //     "levels": {
@@ -154,6 +159,8 @@ export class ForecastDisplayComponent implements OnInit {
   // };
 
   ngOnInit(): void {
+    // get notification
+    this.notify();
     //fetch sheet form
     this.fetchSheetForm = this.formBuilder.group({
       sheetName: [, [Validators.required]]
@@ -163,6 +170,17 @@ export class ForecastDisplayComponent implements OnInit {
     this.outputObjectJson = this.generateSheet(this.inputObject);
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
     this.initializeLevelTotals();
+
+  }
+
+  notify(){
+    this.message= this.worksheetParametersTransferService.getNotification();
+    this.eraseNotification()
+  }
+  eraseNotification(){
+    setTimeout(() => {
+      this.message= ''
+    }, 3000);
   }
 
   //to get fields of form
@@ -603,4 +621,39 @@ export class ForecastDisplayComponent implements OnInit {
 
     return combinations;
   }
+
+
+
+  saveSheet(){
+    let tableName= this.worksheetParametersTransferService.sheetName;
+    if(!this.isSavedIntoDatabase){ 
+      this.forecastManagementService.saveTableData(tableName, this.outputObjectJson).subscribe((result)=>{
+        let i=0;
+        for(let obj of result["sheet"]){
+          this.outputObjectJson.sheet[i]= {...this.outputObjectJson.sheet[i], "_id":obj["_id"]} 
+          i++;
+        }
+        this.isSavedIntoDatabase = !this.isSavedIntoDatabase;
+        console.log(this.outputObjectJson)
+        this.message= "Data saved into Database successfully!!"; 
+        this.eraseNotification()  
+      },(error)=>{
+        this.message = "Something went wong..."
+        this.eraseNotification();
+      })
+      
+    }else{
+      // update the db
+      this.forecastManagementService.updateTableData(tableName, this.outputObjectJson).subscribe((result)=>{
+        console.log(result)
+        this.message= "Data saved into Database successfully!!";   
+        this.eraseNotification()  
+      },(error)=>{
+        this.message = "Something went wrong..."
+        this.eraseNotification();
+      })
+       
+    }
+  }
+
 }
