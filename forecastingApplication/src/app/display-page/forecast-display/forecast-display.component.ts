@@ -24,8 +24,8 @@ export class ForecastDisplayComponent implements OnInit {
   wrongSheetName: boolean = false;
   isDataFieldEdited: boolean = false;
   firstTimeIntervalNotFilled: boolean = false;
-  isDataFieldEdited: boolean=false;
-  firstTimeIntervalNotFilled: boolean=false;
+  // isDataFieldEdited: boolean=false;
+  // firstTimeIntervalNotFilled: boolean=false;
   isSavedIntoDatabase:boolean= false;
   message:string='';
 
@@ -458,7 +458,7 @@ export class ForecastDisplayComponent implements OnInit {
     let key = ""
     const lastLevel = this.levelNamesArr[this.levelNamesArr.length - 1];
     for (const objKey in item) {
-      if (objKey !== "data" && objKey !== lastLevel) {
+      if (objKey !== "data" && objKey !== lastLevel && objKey!="_id") {
         key = key + `${item[objKey]}-`
       }
     }
