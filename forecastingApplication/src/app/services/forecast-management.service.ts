@@ -20,4 +20,15 @@ export class ForecastManagementService {
   getTableData(tableName:any){
     return this.httpClient.get(`${this.url}/sheet/${tableName}`);
   }
+
+
+  saveTableData(tableName:string, data:any){
+    return this.httpClient.post(`${this.url}/sheet/${tableName}`, data);
+  }
+
+  updateTableData(tableName:string, updatedData:any){
+    return this.httpClient.put(`${this.url}/sheet/${tableName}`, updatedData);
+  }
+
+
 }

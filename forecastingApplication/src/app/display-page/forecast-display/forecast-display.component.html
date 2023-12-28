@@ -3,9 +3,16 @@
 </header>
 
 <div class=" container mt-3">
+  <!-- notication bar start-->
+  <div *ngIf="message">
+  <div class="alert alert-warning " role="alert">
+    <strong>{{message}}</strong>
+  </div>
+  </div>
+  <!-- notification bar end -->
   <h4 class="text-center">Forecast Worksheet</h4>
   <div class="my-3">
-    <button class="btn btn-success" title="Save Worksheet">Save</button>
+    <button class="btn btn-success" title="Save Worksheet" (click)="saveSheet()">Save</button>
     <button class="btn btn-primary mx-3" title="Fetch saved Worksheets" (click)="fetchClicked()">Fetch</button>
     <button class="btn btn-secondary" routerLink="" title="Back">Back</button>
     <br>
@@ -87,14 +94,18 @@
             </ng-container>
           </ng-container>
         </ng-container>
-      </ng-container>
-      <ng-container>
-        <tr class="totalRowClass">
-          <td>Grand Total</td>
-          <td *ngFor="let p of [].constructor(levelNamesArr.length-1)"></td>
-          <td contenteditable="true" *ngFor="let grandYrTotal of levelTotals['GrandTotal'],let r=index"
-            (blur)="onGrandTotalEdit($event, r)">{{grandYrTotal | number:'1.0-2'}}</td>
-        </tr>
+        <ng-container *ngIf="i==outputObjectJson.sheet.length - 1">
+          <ng-container *ngIf="fillCurrentTotalArray('', '') as dataArray">
+            <ng-container *ngFor="let data of dataArray">
+              <tr class="totalRowClass">
+                <td>Grand Total</td>
+                <td *ngFor="let p of [].constructor(levelNamesArr.length-1)"></td>
+                <td contenteditable="true" *ngFor="let grandYrTotal of data['totalColValue'],let r=index"
+                  (blur)="onGrandTotalEdit($event, r)">{{grandYrTotal | number:'1.0-2'}}</td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </ng-container>
       </ng-container>
     </tbody>
   </table>

@@ -3,6 +3,9 @@
 </header>
 <br>
 <div class="container">
+        <div *ngIf="message" class="alert alert-danger" role="alert">
+            {{message}}
+        </div>
     <div class="card">
         <div class="card-header">
             Worksheet Configuration

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnChanges, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormRecord, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WorksheetParametersTransferService } from 'src/app/services/worksheet-parameters-transfer.service';
@@ -24,6 +24,10 @@ export class ForecastDisplayComponent implements OnInit {
   wrongSheetName: boolean = false;
   isDataFieldEdited: boolean = false;
   firstTimeIntervalNotFilled: boolean = false;
+  // isDataFieldEdited: boolean=false;
+  // firstTimeIntervalNotFilled: boolean=false;
+  isSavedIntoDatabase:boolean= false;
+  message:string='';
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -34,6 +38,12 @@ export class ForecastDisplayComponent implements OnInit {
   outputObjectJson: any;
 
   ngOnInit(): void {
+    // get notification
+    this.notify();
+    //fetch sheet form
+    this.fetchSheetForm = this.formBuilder.group({
+      sheetName: [, [Validators.required]]
+    });
     this.getYearRange();
     this.populateParameters();
     if(this.worksheetParametersTransferService.loadingSheet){
@@ -53,6 +63,17 @@ export class ForecastDisplayComponent implements OnInit {
     }
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
     this.initializeLevelTotals();
+
+  }
+
+  notify(){
+    this.message= this.worksheetParametersTransferService.getNotification();
+    this.eraseNotification()
+  }
+  eraseNotification(){
+    setTimeout(() => {
+      this.message= ''
+    }, 3000);
   }
 
   //to get fields of form
@@ -275,62 +296,51 @@ export class ForecastDisplayComponent implements OnInit {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
     const intValue = parseInt(value, 10);
+    console.log("start of GrandTotalEdit with intValue",intValue," ",j);
 
     let nextLevelNum = 1;
     let yearLessTotalArr: any[] = [];
     let prevYearExists = j == 0 ? false : true;
     let useYearLessTotal = false;
-
     let nextLevelTotal: any[] = [];
-    //let reqdKeysArr: any[] = [];
+
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey!='GrandTotal'){
-        //console.log("GRAND TOTAL ADJUST me iterTotal hai yeh", levelTotalKey, "year data fetched", this.levelTotals[levelTotalKey][j]);
         nextLevelTotal.push(this.levelTotals[levelTotalKey][j]);
-        //reqdKeysArr.push(levelTotalKey);
-        // if (prevYearExists) {
-        //   yearLessTotalArr.push(this.levelTotals[levelTotalKey][j-1]);
-        // }
-        // if (this.levelTotals[levelTotalKey][j] == 0 && prevYearExists) {
-        //   useYearLessTotal = true;
-        // }
+        if(prevYearExists){
+          yearLessTotalArr.push(this.levelTotals[levelTotalKey][j-1]);
+        }
+        if(prevYearExists && this.levelTotals[levelTotalKey][j]==0){
+          useYearLessTotal=true;
+        }
+        console.log("GRAND TOTAL ADJUST me iterTotal hai yeh", levelTotalKey, "year data fetched", nextLevelTotal[j]);
       }
-      //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
     }
 
-    let nextLevelTotalCopy=[];
     if (useYearLessTotal) {
-      for(let q=0;q<yearLessTotalArr.length;q++){
-        nextLevelTotalCopy[q]=yearLessTotalArr[q];
-      }
       nextLevelTotal=yearLessTotalArr;
     }
 
     let nextLevelTotalSum = nextLevelTotal.reduce((acc, curValue) => acc + curValue, 0);
     nextLevelTotal = nextLevelTotal.map((x) => x * intValue / nextLevelTotalSum);
 
-    // let levelTotalsCopy={};
-    // for(const obj in this.levelTotals){
-    //   for(let q=0;q<this.levelTotals[obj].length;q++){}
-    // }
     //reallocate to key in totals
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey!='GrandTotal'){
-        console.log("CALL AHEAD to",nextLevelNum);
         this.levelTotals[levelTotalKey][j] = nextLevelTotal.shift();
         console.log("GRAND TOTAL ADJUST me totals array after if assign", this.levelTotals);
+        console.log("GrToAd CALL AHEAD to",nextLevelNum);
         this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, nextLevelNum, levelTotalKey);
-      }
-      //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
+      }  
     }
-    console.log("back on the starting",this.levelTotals);
   }
+
 
   getKey(item: SheetEntry) {
     let key = ""
     const lastLevel = this.levelNamesArr[this.levelNamesArr.length - 1];
     for (const objKey in item) {
-      if (objKey !== "data" && objKey !== lastLevel) {
+      if (objKey !== "data" && objKey !== lastLevel && objKey!="_id") {
         key = key + `${item[objKey]}-`
       }
     }
@@ -375,6 +385,12 @@ export class ForecastDisplayComponent implements OnInit {
   fillCurrentTotalArray(prevKey: string, nextKey: string) {
     console.log("start of diff curr total arra", prevKey, "nextkey", nextKey);
     let currentDiffTotalRows = [];
+    if(prevKey=='' && nextKey==''){
+      let obj = {};
+      obj['totalColValue'] = this.levelTotals['GrandTotal'];
+      currentDiffTotalRows.push(obj);
+      return currentDiffTotalRows;
+    }
     try {
       while (prevKey !== nextKey) {
         let obj = {};
@@ -493,4 +509,39 @@ export class ForecastDisplayComponent implements OnInit {
 
     return combinations;
   }
+
+
+
+  saveSheet(){
+    let tableName= this.worksheetParametersTransferService.sheetName;
+    if(!this.isSavedIntoDatabase){ 
+      this.forecastManagementService.saveTableData(tableName, this.outputObjectJson).subscribe((result)=>{
+        let i=0;
+        for(let obj of result["sheet"]){
+          this.outputObjectJson.sheet[i]= {...this.outputObjectJson.sheet[i], "_id":obj["_id"]} 
+          i++;
+        }
+        this.isSavedIntoDatabase = !this.isSavedIntoDatabase;
+        console.log(this.outputObjectJson)
+        this.message= "Data saved into Database successfully!!"; 
+        this.eraseNotification()  
+      },(error)=>{
+        this.message = "Something went wong..."
+        this.eraseNotification();
+      })
+      
+    }else{
+      // update the db
+      this.forecastManagementService.updateTableData(tableName, this.outputObjectJson).subscribe((result)=>{
+        console.log(result)
+        this.message= "Data saved into Database successfully!!";   
+        this.eraseNotification()  
+      },(error)=>{
+        this.message = "Something went wrong..."
+        this.eraseNotification();
+      })
+       
+    }
+  }
+
 }

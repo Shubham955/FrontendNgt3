@@ -23,6 +23,7 @@ export class HomePageComponent implements OnInit {
   addLevelErrorsExist: boolean=false;
   createSheetFormErrorsExist: boolean = false;
   loadForm!: FormGroup;
+  message:string=''
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -95,6 +96,7 @@ export class HomePageComponent implements OnInit {
     let creationJsonData=this.getCreationTimeJson();
 
     this.worksheetParametersTransferService.jsonSchemaCreate=creationJsonData;
+
     // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
     //   console.log("result fetched",result);
     //   if(result==-1){
@@ -103,7 +105,38 @@ export class HomePageComponent implements OnInit {
     //     this.router.navigate(['/worksheet']); 
     //   }
     // }); 
-    this.router.navigate(['/worksheet']);
+//     this.router.navigate(['/worksheet']);
+    this.forecastManagementService.saveTableSchema(creationJsonData).subscribe({
+      next: (result)=>{
+        console.log("result fetched",result);
+        // on success notify
+        this.worksheetParametersTransferService.notify(`Sheet with Name: "${result['tableName']}" has been created successfully!!`); 
+        this.router.navigate(['/worksheet']);
+      },
+      error: (error)=>{
+        console.log(error)
+        console.log(error.error.message)
+        if(error.status == 400){
+        this.message = error.error.message
+        }else{
+          this.message="Something went wrong...please try again later!"
+        }
+        this.sheetNameExists=true;
+        this.router.navigate(['/']);
+      }
+    })
+    
+    // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
+    //   console.log("result fetched",result);
+    //   // on success notify
+    //   this.worksheetParametersTransferService.notify(`Sheet with Name: "${result['tableName']}" has been created successfully!!`); 
+    //   this.router.navigate(['/worksheet']);
+    // }, (error)=>{
+    //     console.log(error.error.message)
+    //     this.message = error.error.message
+    //     this.sheetNameExists=true;
+    //     this.router.navigate(['/']);
+    // }); 
   }
 
   getCreationTimeJson(){
