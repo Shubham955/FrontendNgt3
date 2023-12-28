@@ -3,6 +3,13 @@
 </header>
 
 <div class=" container mt-3">
+  <!-- notication bar start-->
+  <div *ngIf="message">
+  <div class="alert alert-warning " role="alert">
+    <strong>{{message}}</strong>
+  </div>
+  </div>
+  <!-- notification bar end -->
   <h4 class="text-center">Forecast Worksheet</h4>
   <div class="my-3">
     <button class="btn btn-success" title="Save Worksheet" (click)="saveSheet()">Save</button>

@@ -3,6 +3,9 @@
 </header>
 <br>
 <div id="outerBox">
+    <div *ngIf="message" class="alert alert-danger" role="alert">
+        {{message}}
+      </div>
     <form [formGroup]="worksheetForm" (ngSubmit)="createWorksheet()">
         <input type="submit" class="btn btn-success" id="createBt" value="Create Sheet">
         <br>
@@ -11,6 +14,7 @@
         <div id="sheetInfo">
             <label for="sheetNameId">Name</label>
             <input type="text" id="sheetNameId" placeholder="Worksheet Name" formControlName="sheetName" required>
+            
         </div>
 
         <!-- time series dropdown -->
@@ -67,7 +71,7 @@
         <small class="text-danger" *ngIf="createSheetFormErrorsExist">Please resolve shown errors</small>
     </form>
 
-    <label class="text-danger" *ngIf="sheetNameExists">Sheet Name already exists</label><br>
+    <!-- <label class="text-danger" *ngIf="sheetNameExists">Sheet Name already exists</label><br> -->
     <button class="btn btn-success" id="addBt" (click)="add()">Add Label</button>
     <!-- add level div -->
     <form *ngIf="isLevelToBeAdded" [formGroup]="addLevelForm" (ngSubmit)="saveLevel()">
