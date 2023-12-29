@@ -1,6 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~bootstrap/dist/css/bootstrap.css";
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css");
 body {
   margin: 0;
   padding: 0;
+}
+.btn-primary {
+  background: #06041F;
+  border-color: #06041F;
+}
+
+.btn-warning {
+  background: #FBD872;
+  border-color: #FBD872;
+}
+
+.btn-success {
+  background: #47D7AC;
+  border-color: #47D7AC;
 }
