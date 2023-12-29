@@ -175,6 +175,7 @@ export class HomePageComponent implements OnInit {
 
   loadWorkSheet(){
     const tableName = this.loadForm.value.sheetName;
+    //TODO : Check table name 
     this.forecastManagementService.getTableSchema(tableName).subscribe(
       (res)=>{
         this.worksheetParametersTransferService.jsonSchemaCreate = res;
