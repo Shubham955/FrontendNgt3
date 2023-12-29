@@ -1,4 +1,4 @@
-<header class="bg-success sticky-top">
+<header class="sticky-top">
     <h5 class="text-light">Nagarro Forecasting Prototype</h5>
 </header>
 <br>
@@ -24,7 +24,7 @@
                                 placeholder="Worksheet name that you want to open" required>
                         </div>
                         <div class="col-2">
-                            <input type="submit" class="btn btn-primary" value="Open">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-folder2-open"></i> Open</button>
                         </div>
                         </div>
                         </form>
@@ -36,7 +36,8 @@
                             <form [formGroup]="worksheetForm" (ngSubmit)="createWorksheet()">
                                 <div class="text-end">
                                     <small class="text-danger" *ngIf="createSheetFormErrorsExist">Please resolve shown errors</small>
-                                    <input type="submit" class="btn btn-warning" id="createBt" value="Create Sheet">
+                                    <button type="submit" class="btn btn-warning" id="createBt"><i class="bi bi-file-earmark-plus"></i> Create
+                                        Sheet</button>
                                 </div>
                                 <div class="row">
                                     <div id="sheetInfo" class="col">
@@ -108,7 +109,7 @@
                     <label class="text-danger" *ngIf="sheetNameExists">Sheet Name already exists</label><br>
                         <div class="row">
                             <div class="col">
-                                <button class="btn btn-success" id="addBt" (click)="add()">Add Label</button>
+                                <button class="btn btn-success" id="addBt" (click)="add()"><i class="bi bi-plus-square"></i> Add Label</button>
                             </div>
                             <form *ngIf="isLevelToBeAdded" [formGroup]="addLevelForm" (ngSubmit)="saveLevel()" class="row">
                                 <div class="col">
