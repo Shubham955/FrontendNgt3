@@ -80,6 +80,19 @@ export class HomePageComponent implements OnInit {
     this.isLevelToBeAdded=true;
   }
 
+  onLevelNameEdit(event: Event, i: number){
+    const target = event.target as HTMLTableCellElement;
+    const value = target.innerText.trim();
+    this.levelNameArr[i]=value;
+  }
+
+  onLevelCountEdit(event: Event, i: number){
+    const target = event.target as HTMLTableCellElement;
+    const value = target.innerText.trim();
+    const intValue=parseInt(value);
+    this.levelCountArr[i]=intValue;
+  }
+
   createWorksheet() {
     if(this.worksheetForm.invalid){
       this.createSheetFormErrorsExist=true;
@@ -96,47 +109,29 @@ export class HomePageComponent implements OnInit {
     let creationJsonData=this.getCreationTimeJson();
 
     this.worksheetParametersTransferService.jsonSchemaCreate=creationJsonData;
-
-    // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
-    //   console.log("result fetched",result);
-    //   if(result==-1){
-    //     this.sheetNameExists=true;
-    //   } else {
-    //     this.router.navigate(['/worksheet']); 
-    //   }
-    // }); 
-//     this.router.navigate(['/worksheet']);
-    this.forecastManagementService.saveTableSchema(creationJsonData).subscribe({
-      next: (result)=>{
-        console.log("result fetched",result);
-        // on success notify
-        this.worksheetParametersTransferService.notify(`Sheet with Name: "${result['tableName']}" has been created successfully!!`); 
-        this.router.navigate(['/worksheet']);
-      },
-      error: (error)=>{
-        console.log(error)
-        console.log(error.error.message)
-        if(error.status == 400){
-        this.message = error.error.message
-        }else{
-          this.message="Something went wrong...please try again later!"
-        }
-        this.sheetNameExists=true;
-        this.router.navigate(['/']);
-      }
-    })
-    
-    // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe((result)=>{
-    //   console.log("result fetched",result);
-    //   // on success notify
-    //   this.worksheetParametersTransferService.notify(`Sheet with Name: "${result['tableName']}" has been created successfully!!`); 
-    //   this.router.navigate(['/worksheet']);
-    // }, (error)=>{
+ 
+//comment next line before push --------------------------------------------------------------
+     this.router.navigate(['/worksheet']);
+//uncomment next few lines ----------------------------------------------------------------
+    // this.forecastManagementService.saveTableSchema(creationJsonData).subscribe({
+    //   next: (result)=>{
+    //     console.log("result fetched",result);
+    //     // on success notify
+    //     this.worksheetParametersTransferService.notify(`Sheet with Name: "${result['tableName']}" has been created successfully!!`); 
+    //     this.router.navigate(['/worksheet']);
+    //   },
+    //   error: (error)=>{
+    //     console.log(error)
     //     console.log(error.error.message)
+    //     if(error.status == 400){
     //     this.message = error.error.message
+    //     }else{
+    //       this.message="Something went wrong...please try again later!"
+    //     }
     //     this.sheetNameExists=true;
     //     this.router.navigate(['/']);
-    // }); 
+    //   }
+    // })
   }
 
   getCreationTimeJson(){
