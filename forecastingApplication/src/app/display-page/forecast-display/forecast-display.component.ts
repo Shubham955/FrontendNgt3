@@ -188,20 +188,22 @@ export class ForecastDisplayComponent implements OnInit {
     let changedYear = this.timeRangeArr[j];
     let prevYearExists = j == 0 ? false : true;
 
-    let useYearLessTotal = false;
+    //let useYearLessTotal = false;
+    let useYearLessTotal = true;
     this.outputObjectJson.sheet.forEach((iterItem: SheetEntry) => {
       if (currLevelTotalKey === this.getKey(iterItem)) {
         reqdTotalArr.push(iterItem.data[changedYear]);
         if (prevYearExists) {
           yearLessTotalArr.push(iterItem.data[changedYear - 1]);
         }
-        if (iterItem.data[changedYear] == 0 && prevYearExists) {
-          useYearLessTotal = true;
+        if (iterItem.data[changedYear] != 0){// && prevYearExists) {
+          useYearLessTotal = false;// true;
         }
       }
     });
+    console.log("rechecking cur and prev yr total", reqdTotalArr, "prev one", yearLessTotalArr);
     //now we know which array to use
-    if (useYearLessTotal) {
+    if (useYearLessTotal && prevYearExists) {
       reqdTotalArr = yearLessTotalArr;//[...arrName]
     }
     console.log("checking cur and prev yr total", reqdTotalArr, "prev one", yearLessTotalArr);
