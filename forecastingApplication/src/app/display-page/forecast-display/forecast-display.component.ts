@@ -26,9 +26,9 @@ export class ForecastDisplayComponent implements OnInit {
   firstTimeIntervalNotFilled: boolean = false;
   // isDataFieldEdited: boolean=false;
   // firstTimeIntervalNotFilled: boolean=false;
-  isSavedIntoDatabase:boolean= false;
-  message:string='';
-  loadSpinner:boolean = false;
+  isSavedIntoDatabase: boolean = false;
+  message: string = '';
+  loadSpinner: boolean = false;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -47,21 +47,21 @@ export class ForecastDisplayComponent implements OnInit {
     });
     this.getYearRange();
     this.populateParameters();
-    if(this.worksheetParametersTransferService.loadingSheet){
+    if (this.worksheetParametersTransferService.loadingSheet) {
       this.forecastManagementService.getTableData(this.worksheetParametersTransferService.jsonSchemaCreate["tableName"]).subscribe(
-        (res)=>{
+        (res) => {
           this.outputObjectJson = res;
           this.initializeLevelTotals();
 
         }
       )
-    }else{
+    } else {
       this.outputObjectJson = this.generateSheet(this.inputObject);
       this.initializeLevelTotals();
       this.forecastManagementService.saveTableSchema(this.inputObject).subscribe(
-        ()=>{
+        () => {
           console.log("Schema Saved");
-          
+
         }
       );
     }
@@ -69,13 +69,13 @@ export class ForecastDisplayComponent implements OnInit {
 
   }
 
-  notify(){
-    this.message= this.worksheetParametersTransferService.getNotification();
+  notify() {
+    this.message = this.worksheetParametersTransferService.getNotification();
     this.eraseNotification()
   }
-  eraseNotification(){
+  eraseNotification() {
     setTimeout(() => {
-      this.message= ''
+      this.message = ''
     }, 3000);
   }
 
@@ -145,7 +145,7 @@ export class ForecastDisplayComponent implements OnInit {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
     //change in data values
-    item.data[key] = parseInt(value, 10);
+    item.data[key] = parseFloat(value);
     console.log("data edit occured", this.outputObjectJson);
     this.initializeLevelTotals();
   }
@@ -161,19 +161,19 @@ export class ForecastDisplayComponent implements OnInit {
   onTotalCellEdit(event: Event, j: number, item: any, data: any) {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
-    const intValue = parseInt(value, 10);
-    console.log("coloffset",data['colOffset']," ",this.levelNamesArr.length - 2);
+    const intValue = parseFloat(value);
+    console.log("coloffset", data['colOffset'], " ", this.levelNamesArr.length - 2);
     //second last level total has got changed
     if (data['colOffset'] == this.levelNamesArr.length - 2) {
       console.log("2nd level if worked");
-      let itemKeyCopy=this.getKey(item);
+      let itemKeyCopy = this.getKey(item);
       this.adjustSecondLastLevelTotal(intValue, j, itemKeyCopy);
-    } else{// if (data['colOffset'] < this.levelNamesArr.length - 2) {//means previous levels to second last levels
+    } else {// if (data['colOffset'] < this.levelNamesArr.length - 2) {//means previous levels to second last levels
       console.log("other level if worked");
-      let itemKey=this.getKey(item);
-      let itemKeyArr=itemKey.split('-');
+      let itemKey = this.getKey(item);
+      let itemKeyArr = itemKey.split('-');
       //array is 0 indexed but levels in real are 1 indexed
-      let curTotalKey=itemKeyArr.splice(0,data['colOffset'] + 1).join('-');
+      let curTotalKey = itemKeyArr.splice(0, data['colOffset'] + 1).join('-');
       this.adjustOtherLevelTotal(intValue, j, data['colOffset'] + 1, curTotalKey);
     }
     //2 total dist meth if offst==levelcount-1 then below one else total dist
@@ -244,7 +244,7 @@ export class ForecastDisplayComponent implements OnInit {
   }
 
   adjustOtherLevelTotal(intValue: number, j: number, curLevel: number, curTotalLevelKey: string) {
-    console.log("adj other level started",curLevel);
+    console.log("adj other level started", curLevel);
     //as length of levelTotals key comparison so current offset+2 done to tell that now going for 2nd level
     let nextLevelNum = curLevel + 1;
     let yearLessTotalArr: any[] = [];
@@ -254,12 +254,12 @@ export class ForecastDisplayComponent implements OnInit {
     let nextLevelTotal: any[] = [];
     //let reqdKeysArr: any[] = [];
     for (const levelTotalKey in this.levelTotals) {
-      if (levelTotalKey.startsWith(curTotalLevelKey) && levelTotalKey.split('-').length == nextLevelNum){
+      if (levelTotalKey.startsWith(curTotalLevelKey) && levelTotalKey.split('-').length == nextLevelNum) {
         console.log("iterTotal hai yeh", levelTotalKey, "year data fetched", this.levelTotals[levelTotalKey][j]);
         nextLevelTotal.push(this.levelTotals[levelTotalKey][j]);
         //reqdKeysArr.push(levelTotalKey);
         if (prevYearExists) {
-          yearLessTotalArr.push(this.levelTotals[levelTotalKey][j-1]);
+          yearLessTotalArr.push(this.levelTotals[levelTotalKey][j - 1]);
         }
         if (this.levelTotals[levelTotalKey][j] == 0 && prevYearExists) {
           useYearLessTotal = true;
@@ -269,7 +269,7 @@ export class ForecastDisplayComponent implements OnInit {
     }
 
     if (useYearLessTotal) {
-      nextLevelTotal=yearLessTotalArr;
+      nextLevelTotal = yearLessTotalArr;
     }
 
     let nextLevelTotalSum = nextLevelTotal.reduce((acc, curValue) => acc + curValue, 0);
@@ -277,12 +277,12 @@ export class ForecastDisplayComponent implements OnInit {
 
     //reallocate to key in totals
     for (const levelTotalKey in this.levelTotals) {
-      if (levelTotalKey.startsWith(curTotalLevelKey) && levelTotalKey.split('-').length == nextLevelNum){
-        console.log("CALL AHEAD to",nextLevelNum);
+      if (levelTotalKey.startsWith(curTotalLevelKey) && levelTotalKey.split('-').length == nextLevelNum) {
+        console.log("CALL AHEAD to", nextLevelNum);
         this.levelTotals[levelTotalKey][j] = nextLevelTotal.shift();
         if ((nextLevelNum == this.levelNamesArr.length - 1)) {
           this.adjustSecondLastLevelTotal(this.levelTotals[levelTotalKey][j], j, levelTotalKey);
-        } else{
+        } else {
           this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, nextLevelNum, levelTotalKey);
         }
       }
@@ -295,11 +295,11 @@ export class ForecastDisplayComponent implements OnInit {
 
   }
 
-  onGrandTotalEdit(event: Event, j: number){
+  onGrandTotalEdit(event: Event, j: number) {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
-    const intValue = parseInt(value, 10);
-    console.log("start of GrandTotalEdit with intValue",intValue," ",j);
+    const intValue = parseFloat(value);
+    console.log("start of GrandTotalEdit with intValue", intValue, " ", j);
 
     let nextLevelNum = 1;
     let yearLessTotalArr: any[] = [];
@@ -308,20 +308,20 @@ export class ForecastDisplayComponent implements OnInit {
     let nextLevelTotal: any[] = [];
 
     for (const levelTotalKey in this.levelTotals) {
-      if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey!='GrandTotal'){
+      if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey != 'GrandTotal') {
         nextLevelTotal.push(this.levelTotals[levelTotalKey][j]);
-        if(prevYearExists){
-          yearLessTotalArr.push(this.levelTotals[levelTotalKey][j-1]);
+        if (prevYearExists) {
+          yearLessTotalArr.push(this.levelTotals[levelTotalKey][j - 1]);
         }
-        if(prevYearExists && this.levelTotals[levelTotalKey][j]==0){
-          useYearLessTotal=true;
+        if (prevYearExists && this.levelTotals[levelTotalKey][j] == 0) {
+          useYearLessTotal = true;
         }
         console.log("GRAND TOTAL ADJUST me iterTotal hai yeh", levelTotalKey, "year data fetched", nextLevelTotal[j]);
       }
     }
 
     if (useYearLessTotal) {
-      nextLevelTotal=yearLessTotalArr;
+      nextLevelTotal = yearLessTotalArr;
     }
 
     let nextLevelTotalSum = nextLevelTotal.reduce((acc, curValue) => acc + curValue, 0);
@@ -329,12 +329,16 @@ export class ForecastDisplayComponent implements OnInit {
 
     //reallocate to key in totals
     for (const levelTotalKey in this.levelTotals) {
-      if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey!='GrandTotal'){
+      if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey != 'GrandTotal') {
         this.levelTotals[levelTotalKey][j] = nextLevelTotal.shift();
         console.log("GRAND TOTAL ADJUST me totals array after if assign", this.levelTotals);
-        console.log("GrToAd CALL AHEAD to",nextLevelNum);
-        this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, nextLevelNum, levelTotalKey);
-      }  
+        console.log("GrToAd CALL AHEAD to", nextLevelNum);
+        if (this.levelNamesArr.length == 2) {
+          this.adjustSecondLastLevelTotal(this.levelTotals[levelTotalKey][j], j, levelTotalKey);
+        } else {
+          this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, nextLevelNum, levelTotalKey);
+        }
+      }
     }
   }
 
@@ -343,7 +347,7 @@ export class ForecastDisplayComponent implements OnInit {
     let key = ""
     const lastLevel = this.levelNamesArr[this.levelNamesArr.length - 1];
     for (const objKey in item) {
-      if (objKey !== "data" && objKey !== lastLevel && objKey!="_id") {
+      if (objKey !== "data" && objKey !== lastLevel && objKey != "_id") {
         key = key + `${item[objKey]}-`
       }
     }
@@ -388,7 +392,7 @@ export class ForecastDisplayComponent implements OnInit {
   fillCurrentTotalArray(prevKey: string, nextKey: string) {
     console.log("start of diff curr total arra", prevKey, "nextkey", nextKey);
     let currentDiffTotalRows = [];
-    if(prevKey=='' && nextKey==''){
+    if (prevKey == '' && nextKey == '') {
       let obj = {};
       obj['totalColValue'] = this.levelTotals['GrandTotal'];
       currentDiffTotalRows.push(obj);
@@ -515,38 +519,38 @@ export class ForecastDisplayComponent implements OnInit {
 
 
 
-  saveSheet(){
-    this.loadSpinner= !this.loadSpinner;
-    let tableName= this.worksheetParametersTransferService.sheetName;
-    if(!this.isSavedIntoDatabase){ 
-      this.forecastManagementService.saveTableData(tableName, this.outputObjectJson).subscribe((result)=>{
-        let i=0;
-        for(let obj of result["sheet"]){
-          this.outputObjectJson.sheet[i]= {...this.outputObjectJson.sheet[i], "_id":obj["_id"]} 
+  saveSheet() {
+    this.loadSpinner = !this.loadSpinner;
+    let tableName = this.worksheetParametersTransferService.sheetName;
+    if (!this.isSavedIntoDatabase) {
+      this.forecastManagementService.saveTableData(tableName, this.outputObjectJson).subscribe((result) => {
+        let i = 0;
+        for (let obj of result["sheet"]) {
+          this.outputObjectJson.sheet[i] = { ...this.outputObjectJson.sheet[i], "_id": obj["_id"] }
           i++;
         }
         this.isSavedIntoDatabase = !this.isSavedIntoDatabase;
         console.log(this.outputObjectJson)
-        this.loadSpinner= !this.loadSpinner;
-        this.message= "Data saved into Database successfully!!"; 
-        this.eraseNotification()  
-      },(error)=>{
+        this.loadSpinner = !this.loadSpinner;
+        this.message = "Data saved into Database successfully!!";
+        this.eraseNotification()
+      }, (error) => {
         this.message = "Something went wong..."
         this.eraseNotification();
       })
-      
-    }else{
+
+    } else {
       // update the db
-      this.forecastManagementService.updateTableData(tableName, this.outputObjectJson).subscribe((result)=>{
+      this.forecastManagementService.updateTableData(tableName, this.outputObjectJson).subscribe((result) => {
         console.log(result)
-        this.loadSpinner= !this.loadSpinner;
-        this.message= "Data saved into Database successfully!!";   
-        this.eraseNotification()  
-      },(error)=>{
+        this.loadSpinner = !this.loadSpinner;
+        this.message = "Data saved into Database successfully!!";
+        this.eraseNotification()
+      }, (error) => {
         this.message = "Something went wrong..."
         this.eraseNotification();
       })
-       
+
     }
   }
 
