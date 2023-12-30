@@ -36,7 +36,9 @@
                 <form [formGroup]="worksheetForm" (ngSubmit)="createWorksheet()">
                     <div class="text-end">
                         <small class="text-danger" *ngIf="createSheetFormErrorsExist">Please resolve shown
-                            errors</small>
+                            errors<br></small>
+                        <small class="text-danger" *ngIf="invalidTimeRange">End Range can't be less than Start range<br></small>
+                        <small class="text-danger" *ngIf="notMinimumLevels">Atleast 2 levels should be present<br></small>
                         <button type="submit" class="btn btn-warning" id="createBt"><i class="bi bi-file-earmark-plus"></i> Create
                                         Sheet</button>
                     </div>
