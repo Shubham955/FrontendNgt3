@@ -24,8 +24,6 @@ export class ForecastDisplayComponent implements OnInit {
   wrongSheetName: boolean = false;
   isDataFieldEdited: boolean = false;
   firstTimeIntervalNotFilled: boolean = false;
-  // isDataFieldEdited: boolean=false;
-  // firstTimeIntervalNotFilled: boolean=false;
   isSavedIntoDatabase: boolean = false;
   message: string = '';
   loadSpinner: boolean = false;
@@ -131,7 +129,6 @@ export class ForecastDisplayComponent implements OnInit {
   onCellEdit(event: Event, key: string, item: any) {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
-    console.log("v", value, "k", key, "i", item);
     //change in label values
     const originalValue = item[key];
     item[key] = value;
@@ -159,69 +156,99 @@ export class ForecastDisplayComponent implements OnInit {
   }
 
   onTotalCellEdit(event: Event, j: number, item: any, data: any) {
+    //to understand this first check reasoning of fillCurrentTotalArray
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
+    //converts value in total cell to float
     const intValue = parseFloat(value);
-    console.log("coloffset", data['colOffset'], " ", this.levelNamesArr.length - 2);
-    //second last level total has got changed
+
+    // second last level total has got changed 
+    // (colOffset is empty cells before this Total Cell eg CountryTotal being level 1 leaves 0 cell before it) 
+    // suppose there are 4 levels then second last total is after TotalLevels-2 cells
+    // suppose there are 3 levels then second last total is again after TotalLevels-2 cells
     if (data['colOffset'] == this.levelNamesArr.length - 2) {
-      console.log("2nd level if worked");
+      //itemKey generated
       let itemKeyCopy = this.getKey(item);
       this.adjustSecondLastLevelTotal(intValue, j, itemKeyCopy);
-    } else {// if (data['colOffset'] < this.levelNamesArr.length - 2) {//means previous levels to second last levels
-      console.log("other level if worked");
+    } else {//last level does not has total cell so below is for level behind second last level
+      //item key genrated
+      //because suppose 5 level sheet created with levels Country	Gender	Age	City	Religion with 2 count each
+      //Gender1 total will be in both country1 and country2 so to identify whose total has got edited
+      //and once we know whose total country1-gender1 or country2-gender1 has got edited then we can 
+      //know where to drill down
       let itemKey = this.getKey(item);
       let itemKeyArr = itemKey.split('-');
+      
       //array is 0 indexed but levels in real are 1 indexed
+      //below line is itemKey is reduced in size till level whose total has got changed
+      //suppose key is Country2-Gender2-Age2-City2 and gender2Total's jth year value has changed
+      //then we are reducing key to country2-gender2
+      //data['colOffset] for gender2Total will be 1 as only 1 empty cell will be before it
+      //itemKeyArr is 0 indexed based and has values Country2,Gender2,Age2,City2
+      //so we want Country2-Gender2 so itemKeyArr spliced to 0,1+1 as 2nd parameter in splice is 
+      //excluded
       let curTotalKey = itemKeyArr.splice(0, data['colOffset'] + 1).join('-');
+
+      //3rd param curLevel is kept 1 indexed that's why data['colOffset]+1
       this.adjustOtherLevelTotal(intValue, j, data['colOffset'] + 1, curTotalKey);
     }
-    //2 total dist meth if offst==levelcount-1 then below one else total dist
-    //get key nikalo current item ka
-    // then for loop over output json obj and get all items which match these keys and then from these matching items fetch data of jth year and store in array, and distribute total in ratio of elements of array if jth year data is empty then fetch from j-1th array and distribute
   }
 
   adjustSecondLastLevelTotal(value: number, j: number, curItemKey: string) {
-    let currLevelTotalKey = curItemKey;//this.getKey(item);
+    let currLevelTotalKey = curItemKey;
     let reqdTotalArr: any[] = [];
     let yearLessTotalArr: any[] = [];
     let changedYear = this.timeRangeArr[j];
     let prevYearExists = j == 0 ? false : true;
 
-    let useYearLessTotal = false;
+    //here logic is that if suppose 2015 to 2017 years present and suppose 2016 total changed
+    //then if 2016 has any non zero value then we will take ratios of 2016 otherwise ratios of
+    //it's previous year
+
+    //firstly assumption that we will use prevYear logic and if any non zero value found in 2016 year
+    //then useYearLessTotal made false
+    let useYearLessTotal = true;
+    //as this is second level total so suppose in 5 level chart if
+    //curLevelTotalKey=Country1-Gender2-Age2-City2
+    //then next level i.e Religion will also have same key so iterating outputObjectJson we will
+    //find items with same key take their existing values and also existing values of prevYear
+    //if any non zero value found in jth year (year whose total has got changed) then use ratios of
+    //current year else previous year
     this.outputObjectJson.sheet.forEach((iterItem: SheetEntry) => {
       if (currLevelTotalKey === this.getKey(iterItem)) {
         reqdTotalArr.push(iterItem.data[changedYear]);
         if (prevYearExists) {
           yearLessTotalArr.push(iterItem.data[changedYear - 1]);
         }
-        if (iterItem.data[changedYear] == 0 && prevYearExists) {
-          useYearLessTotal = true;
+        if (iterItem.data[changedYear] != 0) {
+          useYearLessTotal = false;
         }
       }
     });
-    //now we know which array to use
-    if (useYearLessTotal) {
-      reqdTotalArr = yearLessTotalArr;//[...arrName]
+
+    //now we know which array to use (if useYearLessTotal is still true then a safety check that
+    //whether previous year exists)
+    if (useYearLessTotal && prevYearExists) {
+      reqdTotalArr = yearLessTotalArr;
     }
-    console.log("checking cur and prev yr total", reqdTotalArr, "prev one", yearLessTotalArr);
+
+    //based on existing/previous year values sum calculated
     let reqdTotalArrSum = reqdTotalArr.reduce((acc, curValue) => acc + curValue, 0);
+    //user given total distributed in ratios as in existing/previous year values array
     reqdTotalArr = reqdTotalArr.map((x) => x * value / reqdTotalArrSum);
-    console.log("updated reqd total either from jth or j-1th", reqdTotalArr);
-    //p is marker to iterate reqdTotalArr
-    // let p=0;
-    // this.outputObjectJson.sheet.forEach((iterItem: SheetEntry)=> {
-    //   if (currLevelTotalKey === this.getKey(iterItem) ) {
-    //     iterItem.data[changedYear]=reqdTotalArr[p];
-    //     p=p+1;
-    //   }
-    // });
+    
+    //this updates updated last level totals in dom by using map function
     this.updateSheetWithAdjustedValues(currLevelTotalKey, changedYear, reqdTotalArr)
+    
     console.log("after second last total adjust", this.outputObjectJson);
+    
+    //totals once again initialized 
     this.initializeLevelTotals();
   }
 
   private updateSheetWithAdjustedValues(currLevelTotalKey: string, changedYear: any, reqdTotalArr: number[]) {
+    //output object json, item that match our currLevelTotalKey, these items jth year data changed
+    //rest kept same and whole updatedSheet stored in updatedSheet
     const updatedSheet = this.outputObjectJson.sheet.map((iterItem: SheetEntry) => {
       if (currLevelTotalKey === this.getKey(iterItem)) {
         return {
@@ -235,92 +262,104 @@ export class ForecastDisplayComponent implements OnInit {
       return iterItem;
     });
 
+    //output object json also spread and sheet updated with updated values
     this.outputObjectJson = {
       ...this.outputObjectJson,
       sheet: updatedSheet,
     };
 
+    //below reflects changed values on dom
     this.changeDetectorRef.detectChanges();
   }
 
   adjustOtherLevelTotal(intValue: number, j: number, curLevel: number, curTotalLevelKey: string) {
-    console.log("adj other level started", curLevel);
-    //as length of levelTotals key comparison so current offset+2 done to tell that now going for 2nd level
+    //explaining params
+    //intValue:- value changed in total
+    //j:- year index in levelTotals[levelTotals ki keys] array
+    //curLevel:- level number whose total has got changed (here i have kept curLevel 1 indexed)
+    //curTotalLevelKey:- item key till curLevel
+
+    //nextLevel is nextLevel in which we want to distribute intValue
     let nextLevelNum = curLevel + 1;
+
     let yearLessTotalArr: any[] = [];
     let prevYearExists = j == 0 ? false : true;
-    let useYearLessTotal = false;
+
+    //useYearLessTotal has same logic as in secondLastLevelTotal that non zero value wala
+    let useYearLessTotal = true;
 
     let nextLevelTotal: any[] = [];
-    //let reqdKeysArr: any[] = [];
+
+    //here levelTotals array iterated
+    //suppose curTotalLeveLKey=Country2-Gender2
+    //then this changed total has to get distributed in AGe level having keys=Country2-Gender2-Age1 and Country2-Gender2-Age2
+    
+    //logic is iterate levelTotals find keys which start with curTotalLevelKey and have length equal to nextLevelNum
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.startsWith(curTotalLevelKey) && levelTotalKey.split('-').length == nextLevelNum) {
-        console.log("iterTotal hai yeh", levelTotalKey, "year data fetched", this.levelTotals[levelTotalKey][j]);
         nextLevelTotal.push(this.levelTotals[levelTotalKey][j]);
-        //reqdKeysArr.push(levelTotalKey);
+
         if (prevYearExists) {
           yearLessTotalArr.push(this.levelTotals[levelTotalKey][j - 1]);
         }
-        if (this.levelTotals[levelTotalKey][j] == 0 && prevYearExists) {
-          useYearLessTotal = true;
+        if (this.levelTotals[levelTotalKey][j] != 0) {
+          useYearLessTotal = false;
         }
       }
-      //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
     }
 
-    if (useYearLessTotal) {
+    if (useYearLessTotal && prevYearExists) {
       nextLevelTotal = yearLessTotalArr;
     }
 
     let nextLevelTotalSum = nextLevelTotal.reduce((acc, curValue) => acc + curValue, 0);
     nextLevelTotal = nextLevelTotal.map((x) => x * intValue / nextLevelTotalSum);
 
-    //reallocate to key in totals
+    //reallocate to key in totals which satisfied our condition so same condition
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.startsWith(curTotalLevelKey) && levelTotalKey.split('-').length == nextLevelNum) {
         console.log("CALL AHEAD to", nextLevelNum);
+        //satisfied key given distributed int value as per it's ratio
         this.levelTotals[levelTotalKey][j] = nextLevelTotal.shift();
+
+        //if nextLevel is secondLast then secondLast adjust called else adjOther again
         if ((nextLevelNum == this.levelNamesArr.length - 1)) {
           this.adjustSecondLastLevelTotal(this.levelTotals[levelTotalKey][j], j, levelTotalKey);
         } else {
           this.adjustOtherLevelTotal(this.levelTotals[levelTotalKey][j], j, nextLevelNum, levelTotalKey);
         }
       }
-      //intvalue needs to be distrib onto nextLevel total ratios then updated in totalsARr then things go ahead
     }
-    // this.levelTotals={
-    //   ...this.levelTotals,
-    //   [reqdKeysArr.shift()]: nextLevelTotal.shift(),
-    // };
-
   }
 
   onGrandTotalEdit(event: Event, j: number) {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
     const intValue = parseFloat(value);
-    console.log("start of GrandTotalEdit with intValue", intValue, " ", j);
 
     let nextLevelNum = 1;
     let yearLessTotalArr: any[] = [];
     let prevYearExists = j == 0 ? false : true;
-    let useYearLessTotal = false;
+    let useYearLessTotal = true;//false;
     let nextLevelTotal: any[] = [];
 
+    //same logic as adjustOtherLevel
+    //here length should be equal to nextLevelNum i.e 1 here but key should not be GrandTotal as 
+    //it's length is also 1
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey != 'GrandTotal') {
         nextLevelTotal.push(this.levelTotals[levelTotalKey][j]);
         if (prevYearExists) {
           yearLessTotalArr.push(this.levelTotals[levelTotalKey][j - 1]);
         }
-        if (prevYearExists && this.levelTotals[levelTotalKey][j] == 0) {
-          useYearLessTotal = true;
+        if (this.levelTotals[levelTotalKey][j] != 0) {//&& prevYearExists
+          useYearLessTotal = false;//true;
         }
         console.log("GRAND TOTAL ADJUST me iterTotal hai yeh", levelTotalKey, "year data fetched", nextLevelTotal[j]);
       }
     }
 
-    if (useYearLessTotal) {
+    if (useYearLessTotal && prevYearExists) {
       nextLevelTotal = yearLessTotalArr;
     }
 
@@ -331,8 +370,11 @@ export class ForecastDisplayComponent implements OnInit {
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.split('-').length == nextLevelNum && levelTotalKey != 'GrandTotal') {
         this.levelTotals[levelTotalKey][j] = nextLevelTotal.shift();
-        console.log("GRAND TOTAL ADJUST me totals array after if assign", this.levelTotals);
+
         console.log("GrToAd CALL AHEAD to", nextLevelNum);
+
+        //if only 2 levels then grand total has to be distributed to next level which is second last
+        //level
         if (this.levelNamesArr.length == 2) {
           this.adjustSecondLastLevelTotal(this.levelTotals[levelTotalKey][j], j, levelTotalKey);
         } else {
@@ -352,7 +394,6 @@ export class ForecastDisplayComponent implements OnInit {
       }
     }
     key = key.slice(0, key.length - 1);
-    console.log("itttttt", key);
     return key;
   }
 
@@ -361,7 +402,28 @@ export class ForecastDisplayComponent implements OnInit {
     return this.levelNamesArr.slice(0, this.levelNamesArr.indexOf(level) + 1).map((name: string | number) => item[name]).join("-");
   }
 
+  //levelTotals store levelFor each key
   levelTotals = {};
+  //sample of level totals
+//   Country1:(4) [0, 0, 0, 0]
+// Country1-Gender1: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age1: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age1-City1: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age1-City1-Religion1: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age1-City1-Religion2: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age1-City2: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age1-City2-Religion1: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age1-City2-Religion2: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age2: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age2-City1: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age2-City1-Religion1: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age2-City1-Religion2: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age2-City2: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age2-City2-Religion1: (4) [0, 0, 0, 0]
+// Country1-Gender1-Age2-City2-Religion2: (4) [0, 0, 0, 0]
+// Country1-Gender2: (4) [0, 0, 0, 0]
+// ....so on and ends with next line
+// GrandTotal: (4) [0, 0, 0, 0]
 
   // Function to initialize the level totals object
   initializeLevelTotals() {
@@ -390,40 +452,69 @@ export class ForecastDisplayComponent implements OnInit {
   }
 
   fillCurrentTotalArray(prevKey: string, nextKey: string) {
-    console.log("start of diff curr total arra", prevKey, "nextkey", nextKey);
+    //below variable stores total of all levels that are different in prevKey and nextKey 
     let currentDiffTotalRows = [];
+    //below for grand total (And grand total gets written when last item of outputJson is being executed)
     if (prevKey == '' && nextKey == '') {
       let obj = {};
       obj['totalColValue'] = this.levelTotals['GrandTotal'];
       currentDiffTotalRows.push(obj);
       return currentDiffTotalRows;
     }
+    //below for other Total values
     try {
+      //suppose prevKey=Country1-Gender2-Age2-City2
+      //suppose nextKey=Country2-Gender1-Age1-City1
+      //now untill prev and next key are not different repeat loop
+      //REASON of prev line (
+      //suppose prevKey=Country1-Gender1-Age1-City1(in 5 level chart line 2)
+      //suppose nextKey=Country1-Gender1-Age1-City2(in 5 level chart line 3)
+      //as above 2 key differ in these 2 keys by just 1 level so here after line 2 City1 total will come
+      //)
+      //so Prevkey me jahan par bhi next key differ karegi wahan PrevKey se jo level different mila 
+      //uska total wali row aayegi
       while (prevKey !== nextKey) {
         let obj = {};
 
         let splittedKey = prevKey.split('-');
+        //suppose in 5 levels prevKey=Country1-Gender1-Age2-City2
+        //nextKey=Country1-Gender2-Age1-City1
+        //now city1 total row will look like
+        //3 empty cells then city1 total then 1 empty cell and then data cells
+        //colOffset represents starting empty cells which will be splittedKey.length-1
+        //here splittedKey length is 4 so 4-1=3
         obj['colOffset'] = splittedKey.length - 1;
+        //remaining levels represent empty celss after Total cell
+        //remaining levels here is LevelCount-splittedKey.length
         obj['remainingLevels'] = this.levelNamesArr.length - splittedKey.length;
         //generating male Total, female Total words etc
+        //lastWord in splittedKey array tells that which level total we have to write
         obj['totalColName'] = splittedKey[splittedKey.length - 1] + " " + "Total";
+        //setting total value from levelTotals
         obj['totalColValue'] = this.levelTotals[prevKey];
         currentDiffTotalRows.push(obj);
 
         //-1 means last element mentioned and splice excludes 2nd index element
+        //below 2 lines changes prevKey to Country1-Gender1-Age2
         splittedKey = splittedKey.slice(0, -1);
         prevKey = splittedKey.join('-');
 
+        //below 3 lines change nextKey to Country1-Gender2-Age1
         let splittedNextKey = nextKey.split('-');
         splittedNextKey = splittedNextKey.slice(0, -1);
         nextKey = splittedNextKey.join('-');
+
+        //now prevKey and nextKey lengths have changed so in next iteration this will affect
+        //colOffset and remainingLevels shifting our next Totals one one cell back
         console.log("rejoined", prevKey, "next key", nextKey);
       }
+      //logging all the totals this PrevKey and nextKey have generated
       console.log("cur tot arr", currentDiffTotalRows);
     }
     catch (error) {
       console.log("err caught ", error);
     }
+    //this list of generated totals is returned and used to genrate rows
     return currentDiffTotalRows;
   }
 
