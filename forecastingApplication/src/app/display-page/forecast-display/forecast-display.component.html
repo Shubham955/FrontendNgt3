@@ -17,9 +17,8 @@
   <!-- notification bar end -->
   <h4 class="text-center">Forecast Worksheet</h4>
   <div class="my-3">
-    <button class="btn btn-success" title="Save Worksheet" (click)="saveSheet()">Save</button>
-    <button class="btn btn-primary mx-3" title="Fetch saved Worksheets" (click)="fetchClicked()">Fetch</button>
-    <button class="btn btn-secondary" routerLink="" title="Back">Back</button>
+    <button class="btn btn-success" title="Save Worksheet" (click)="saveSheet()"><i class="bi bi-floppy"></i> Save</button>
+    <button class="btn btn-secondary" routerLink="" title="Back"><i class="bi bi-chevron-left"></i> Back</button>
     <br>
 
     <form *ngIf="isFetchRequested" [formGroup]="fetchSheetForm" (ngSubmit)="loadWorksheet()">
