@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { WorksheetParametersTransferService } from 'src/app/services/worksheet-parameters-transfer.service';
 import { ForecastManagementService } from 'src/app/services/forecast-management.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-home-page',
@@ -189,12 +190,10 @@ export class HomePageComponent implements OnInit {
           this.worksheetParametersTransferService.levelCount += 1;
         })
         this.worksheetParametersTransferService.loadingSheet = true;
+        this.router.navigate(["/worksheet"]);
       },
       (err) => {
-        console.error(err);
-      },
-      () => {
-        this.router.navigate(["/worksheet"]);
+        this.message = err.error.message;
       }
     )
   }

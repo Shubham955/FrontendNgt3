@@ -50,7 +50,9 @@ export class ForecastDisplayComponent implements OnInit {
         (res) => {
           this.outputObjectJson = res;
           this.initializeLevelTotals();
-
+          this.isSavedIntoDatabase = true;
+          console.log(res);
+          
         }
       )
     } else {
