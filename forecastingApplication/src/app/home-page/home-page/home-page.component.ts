@@ -24,7 +24,9 @@ export class HomePageComponent implements OnInit {
   addLevelErrorsExist: boolean = false;
   createSheetFormErrorsExist: boolean = false;
   loadForm!: FormGroup;
-  message: string = ''
+  message: string = '';
+  invalidTimeRange: boolean=false;
+  notMinimumLevels: boolean=false;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -95,7 +97,17 @@ export class HomePageComponent implements OnInit {
   }
 
   createWorksheet() {
-    if (this.worksheetForm.invalid) {
+    if(this.worksheetForm.value.startRange>this.worksheetForm.value.endRange){
+      this.invalidTimeRange=true;
+    } else{
+      this.invalidTimeRange=false;
+    }
+    if(this.levelNameArr.length<2){
+      this.notMinimumLevels=true;
+    } else{
+      this.notMinimumLevels=false;
+    }
+    if (this.worksheetForm.invalid || this.invalidTimeRange || this.notMinimumLevels) {
       this.createSheetFormErrorsExist = true;
       return;
     }
