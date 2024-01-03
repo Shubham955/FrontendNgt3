@@ -18,6 +18,7 @@ import { from, pipe } from 'rxjs';
 })
 export class ForecastDisplayComponent implements OnInit {
 
+
   levelNamesArr: any = [];
   timeRangeArr: any = [];
   fetchSheetForm!: FormGroup;
@@ -674,7 +675,7 @@ export class ForecastDisplayComponent implements OnInit {
       console.log("select", this.selected);
     }
     else if ($event.ctrlKey && $event.key === 'v') {
-      if (this.selected.length && this.copied.length) {
+      if (this.selected.length) {
         $event.preventDefault()
       }
       for (let index = 0; index < this.selected.length; index++) {
