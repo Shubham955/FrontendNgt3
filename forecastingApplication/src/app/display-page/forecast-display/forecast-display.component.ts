@@ -28,8 +28,8 @@ export class ForecastDisplayComponent implements OnInit {
   isSavedIntoDatabase: boolean = false;
   message: string = '';
   loadSpinner: boolean = false;
-  selected : Array<any> = [];
-  copied : Array<any> = [];
+  selected: Array<any> = [];
+  copied: Array<any> = [];
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -55,7 +55,7 @@ export class ForecastDisplayComponent implements OnInit {
           this.initializeLevelTotals();
           this.isSavedIntoDatabase = true;
           console.log(res);
-          
+
         }
       )
     } else {
@@ -147,9 +147,12 @@ export class ForecastDisplayComponent implements OnInit {
     const target = event.target as HTMLTableCellElement;
     const value = target.innerText.trim();
     //change in data values
+    const originalDataValue = item.data[key];
     item.data[key] = parseFloat(value);
-    console.log("data edit occured", this.outputObjectJson);
-    this.initializeLevelTotals();
+    if (originalDataValue !== item.data[key]) {
+      console.log("data edit occured", this.outputObjectJson);
+      this.initializeLevelTotals();
+    }
   }
 
   updateOtherItems(key: string, oldValue: string, newValue: string) {
@@ -183,7 +186,7 @@ export class ForecastDisplayComponent implements OnInit {
       //know where to drill down
       let itemKey = this.getKey(item);
       let itemKeyArr = itemKey.split('-');
-      
+
       //array is 0 indexed but levels in real are 1 indexed
       //below line is itemKey is reduced in size till level whose total has got changed
       //suppose key is Country2-Gender2-Age2-City2 and gender2Total's jth year value has changed
@@ -241,12 +244,12 @@ export class ForecastDisplayComponent implements OnInit {
     let reqdTotalArrSum = reqdTotalArr.reduce((acc, curValue) => acc + curValue, 0);
     //user given total distributed in ratios as in existing/previous year values array
     reqdTotalArr = reqdTotalArr.map((x) => x * value / reqdTotalArrSum);
-    
+
     //this updates updated last level totals in dom by using map function
     this.updateSheetWithAdjustedValues(currLevelTotalKey, changedYear, reqdTotalArr)
-    
+
     console.log("after second last total adjust", this.outputObjectJson);
-    
+
     //totals once again initialized 
     this.initializeLevelTotals();
   }
@@ -298,7 +301,7 @@ export class ForecastDisplayComponent implements OnInit {
     //here levelTotals array iterated
     //suppose curTotalLeveLKey=Country2-Gender2
     //then this changed total has to get distributed in AGe level having keys=Country2-Gender2-Age1 and Country2-Gender2-Age2
-    
+
     //logic is iterate levelTotals find keys which start with curTotalLevelKey and have length equal to nextLevelNum
     for (const levelTotalKey in this.levelTotals) {
       if (levelTotalKey.startsWith(curTotalLevelKey) && levelTotalKey.split('-').length == nextLevelNum) {
@@ -410,25 +413,25 @@ export class ForecastDisplayComponent implements OnInit {
   //levelTotals store levelFor each key
   levelTotals = {};
   //sample of level totals
-//   Country1:(4) [0, 0, 0, 0]
-// Country1-Gender1: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age1: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age1-City1: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age1-City1-Religion1: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age1-City1-Religion2: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age1-City2: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age1-City2-Religion1: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age1-City2-Religion2: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age2: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age2-City1: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age2-City1-Religion1: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age2-City1-Religion2: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age2-City2: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age2-City2-Religion1: (4) [0, 0, 0, 0]
-// Country1-Gender1-Age2-City2-Religion2: (4) [0, 0, 0, 0]
-// Country1-Gender2: (4) [0, 0, 0, 0]
-// ....so on and ends with next line
-// GrandTotal: (4) [0, 0, 0, 0]
+  //   Country1:(4) [0, 0, 0, 0]
+  // Country1-Gender1: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age1: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age1-City1: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age1-City1-Religion1: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age1-City1-Religion2: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age1-City2: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age1-City2-Religion1: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age1-City2-Religion2: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age2: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age2-City1: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age2-City1-Religion1: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age2-City1-Religion2: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age2-City2: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age2-City2-Religion1: (4) [0, 0, 0, 0]
+  // Country1-Gender1-Age2-City2-Religion2: (4) [0, 0, 0, 0]
+  // Country1-Gender2: (4) [0, 0, 0, 0]
+  // ....so on and ends with next line
+  // GrandTotal: (4) [0, 0, 0, 0]
 
   // Function to initialize the level totals object
   initializeLevelTotals() {
@@ -650,27 +653,30 @@ export class ForecastDisplayComponent implements OnInit {
     }
   }
 
-  selectCell($event: MouseEvent,year: number,item : SheetEntry) {
-    if($event.shiftKey){
+  selectCell($event: MouseEvent, year: number, item: SheetEntry) {
+    if ($event.ctrlKey) {
       let selectedCell = {}
       selectedCell["cell"] = item;
       selectedCell["year"] = year;
       this.selected.push(selectedCell);
-      console.log("selected",this.selected);
+      console.log("selected", this.selected);
     }
   }
 
-  handleKeyDown($event: KeyboardEvent,year: number,item : SheetEntry) {
-    if($event.ctrlKey && $event.key === 'c'){
-      if(this.selected.length){
+  handleKeyDown($event: KeyboardEvent, year: number, item: SheetEntry) {
+    if ($event.ctrlKey && $event.key === 'c') {
+      if (this.selected.length) {
         $event.preventDefault()
       }
-      this.copied = {...this.selected};
+      this.copied = { ...this.selected };
       this.selected = [];
-      console.log("copy",this.copied);
-      console.log("select",this.selected);
+      console.log("copy", this.copied);
+      console.log("select", this.selected);
     }
-    else if($event.ctrlKey && $event.key === 'v'){
+    else if ($event.ctrlKey && $event.key === 'v') {
+      if (this.selected.length && this.copied.length) {
+        $event.preventDefault()
+      }
       for (let index = 0; index < this.selected.length; index++) {
         this.selected[index]["cell"].data[this.selected[index]["year"]] = this.copied[index]["cell"].data[this.copied[index]["year"]]
       }
@@ -679,18 +685,18 @@ export class ForecastDisplayComponent implements OnInit {
     }
   }
 
-  checkSelected(item : SheetEntry , year : number){
+  checkSelected(item: SheetEntry, year: number) {
     for (let index = 0; index < this.selected.length; index++) {
-      if(this.selected[index]["cell"] == item && this.selected[index]["year"] == year ){
+      if (this.selected[index]["cell"] == item && this.selected[index]["year"] == year) {
         return true;
       };
     }
     return false;
   }
 
-  checkCopied(item : SheetEntry , year : number){
+  checkCopied(item: SheetEntry, year: number) {
     for (let index = 0; index < this.copied.length; index++) {
-      if(this.copied[index]["cell"] == item && this.copied[index]["year"] == year ){
+      if (this.copied[index]["cell"] == item && this.copied[index]["year"] == year) {
         return true;
       };
     }
