@@ -652,7 +652,7 @@ export class ForecastDisplayComponent implements OnInit {
   }
 
   selectCell($event: MouseEvent, year: number, item: SheetEntry) {
-    if ($event.shiftKey) {
+    if ($event.ctrlKey) {
       let selectedCell = {}
       selectedCell["cell"] = item;
       selectedCell["year"] = year;
@@ -672,9 +672,7 @@ export class ForecastDisplayComponent implements OnInit {
       console.log("select", this.selected);
     }
     else if ($event.ctrlKey && $event.key === 'v') {
-      if (this.selected.length && this.copied.length) {
-        $event.preventDefault()
-      }
+      $event.preventDefault()
       for (let index = 0; index < this.selected.length; index++) {
         this.selected[index]["cell"].data[this.selected[index]["year"]] = this.copied[index]["cell"].data[this.copied[index]["year"]]
       }
