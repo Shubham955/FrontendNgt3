@@ -150,10 +150,8 @@ export class ForecastDisplayComponent implements OnInit {
     //change in data values
     const originalDataValue = item.data[key];
     item.data[key] = parseFloat(value);
-    if (originalDataValue !== item.data[key]) {
-      console.log("data edit occured", this.outputObjectJson);
-      this.initializeLevelTotals();
-    }
+    console.log("data edit occured", this.outputObjectJson);
+    this.initializeLevelTotals();
   }
 
   updateOtherItems(key: string, oldValue: string, newValue: string) {
@@ -655,7 +653,7 @@ export class ForecastDisplayComponent implements OnInit {
   }
 
   selectCell($event: MouseEvent, year: number, item: SheetEntry) {
-    if ($event.ctrlKey) {
+    if ($event.shiftKey) {
       let selectedCell = {}
       selectedCell["cell"] = item;
       selectedCell["year"] = year;
