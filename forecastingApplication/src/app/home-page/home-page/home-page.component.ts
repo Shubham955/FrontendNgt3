@@ -202,6 +202,7 @@ export class HomePageComponent implements OnInit {
           this.worksheetParametersTransferService.levelCount += 1;
         })
         this.worksheetParametersTransferService.loadingSheet = true;
+        this.worksheetParametersTransferService.notify(`Sheet with Name: "${tableName}" has been opened successfully!!`);
         this.router.navigate(["/worksheet"]);
       },
       (err) => {
