@@ -34,7 +34,12 @@ header {
   color: rgb(0, 0, 0);
 }
 
-
+.selected {
+  background-color: #7df5d1;
+}
+.copied{
+  background-color: #7d9df5;
+}
 .lds-spinner {
   color: official;
   display: inline-block;

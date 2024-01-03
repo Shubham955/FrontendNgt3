@@ -61,7 +61,9 @@
           <td *ngFor="let name of levelNamesArr" contenteditable="true" (blur)="onCellEdit($event, name, item)">
             {{ item[name] }}
           </td>
-          <td *ngFor="let year of timeRangeArr" contenteditable="true" (blur)="onDataCellEdit($event, year, item)">
+          <td *ngFor="let year of timeRangeArr" contenteditable="true" (blur)="onDataCellEdit($event, year, item)"
+            (click)="selectCell($event , year , item)" (keydown)="handleKeyDown($event , year , item)"
+            [ngClass]="{'selected' : checkSelected(item,year)}" [ngClass]="{'copied' : checkCopied(item,year)}">
             {{ item.data[year] | number:'1.0-2'}}
           </td>
         </tr>

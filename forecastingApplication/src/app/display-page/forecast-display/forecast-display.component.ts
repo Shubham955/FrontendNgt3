@@ -17,6 +17,7 @@ import { from, pipe } from 'rxjs';
   styleUrls: ['./forecast-display.component.css'],
 })
 export class ForecastDisplayComponent implements OnInit {
+
   levelNamesArr: any = [];
   timeRangeArr: any = [];
   fetchSheetForm!: FormGroup;
@@ -27,6 +28,8 @@ export class ForecastDisplayComponent implements OnInit {
   isSavedIntoDatabase: boolean = false;
   message: string = '';
   loadSpinner: boolean = false;
+  selected : Array<any> = [];
+  copied : Array<any> = [];
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -647,4 +650,50 @@ export class ForecastDisplayComponent implements OnInit {
     }
   }
 
+  selectCell($event: MouseEvent,year: number,item : SheetEntry) {
+    if($event.shiftKey){
+      let selectedCell = {}
+      selectedCell["cell"] = item;
+      selectedCell["year"] = year;
+      this.selected.push(selectedCell);
+      console.log("selected",this.selected);
+    }
+  }
+
+  handleKeyDown($event: KeyboardEvent,year: number,item : SheetEntry) {
+    if($event.ctrlKey && $event.key === 'c'){
+      if(this.selected.length){
+        $event.preventDefault()
+      }
+      this.copied = {...this.selected};
+      this.selected = [];
+      console.log("copy",this.copied);
+      console.log("select",this.selected);
+    }
+    else if($event.ctrlKey && $event.key === 'v'){
+      for (let index = 0; index < this.selected.length; index++) {
+        this.selected[index]["cell"].data[this.selected[index]["year"]] = this.copied[index]["cell"].data[this.copied[index]["year"]]
+      }
+      this.selected = [];
+      this.copied = [];
+    }
+  }
+
+  checkSelected(item : SheetEntry , year : number){
+    for (let index = 0; index < this.selected.length; index++) {
+      if(this.selected[index]["cell"] == item && this.selected[index]["year"] == year ){
+        return true;
+      };
+    }
+    return false;
+  }
+
+  checkCopied(item : SheetEntry , year : number){
+    for (let index = 0; index < this.copied.length; index++) {
+      if(this.copied[index]["cell"] == item && this.copied[index]["year"] == year ){
+        return true;
+      };
+    }
+    return false;
+  }
 }
