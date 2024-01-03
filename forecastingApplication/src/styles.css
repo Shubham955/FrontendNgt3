@@ -19,3 +19,8 @@ body {
   background: #47D7AC;
   border-color: #47D7AC;
 }
+.totalRowClass {
+  background-color: rgb(137, 221, 148) !important;
+  font-weight: bolder !important;
+  color: rgb(0, 0, 0) !important;
+}

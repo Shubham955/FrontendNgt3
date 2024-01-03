@@ -663,7 +663,7 @@ export class ForecastDisplayComponent implements OnInit {
   }
 
   handleKeyDown($event: KeyboardEvent, year: number, item: SheetEntry) {
-    if ($event.ctrlKey && $event.key === 'c') {
+    if ($event.key === 'c' && $event.ctrlKey ) {
       if (this.selected.length) {
         $event.preventDefault()
       }
@@ -672,13 +672,41 @@ export class ForecastDisplayComponent implements OnInit {
       console.log("copy", this.copied);
       console.log("select", this.selected);
     }
-    else if ($event.ctrlKey && $event.key === 'v') {
+    else if ($event.key === 'v' && $event.ctrlKey) {
       $event.preventDefault()
+      // let index = 0
+      let updatedSheet : Array<any> = this.outputObjectJson.sheet;
+      console.log(updatedSheet);
       for (let index = 0; index < this.selected.length; index++) {
-        this.selected[index]["cell"].data[this.selected[index]["year"]] = this.copied[index]["cell"].data[this.copied[index]["year"]]
+        const itemIndex = updatedSheet.findIndex((entry : SheetEntry)=>{
+          return entry === this.selected[index]["cell"]
+        })
+        updatedSheet[itemIndex].data[this.selected[index]["year"]] = this.copied[index]["cell"].data[this.copied[index]["year"]]
       }
-      this.selected = [];
-      this.copied = [];
+    // updatedSheet = this.outputObjectJson.sheet.map((iterItem: SheetEntry) => {
+    //   if (iterItem === this.selected[index]["cell"]) {
+    //     let res = {
+    //       ...iterItem,
+    //       data: {
+    //         ...iterItem.data,
+    //         [this.selected[index]["year"]]: this.copied[index]["cell"].data[this.copied[index]["year"]],
+    //       },
+    //     };
+    //     index++;
+    //     return res;
+    //   }
+    //   return iterItem;
+    // });
+    this.selected = [];
+    this.copied = [];
+    //output object json also spread and sheet updated with updated values
+    this.outputObjectJson = {
+      ...this.outputObjectJson,
+      sheet: updatedSheet,
+    };
+
+    //below reflects changed values on dom
+    this.changeDetectorRef.detectChanges();
     }
   }
 

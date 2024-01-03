@@ -41,9 +41,10 @@
     <Label>Current Sheet: {{worksheetParametersTransferService.sheetName}}</Label>
   </div>
   <label class="text-danger" *ngIf="firstTimeIntervalNotFilled">First Time interval has to be filled</label>
-  <table>
+  <div class="table-responsive">
+    <table class="table">
     <!-- Table Header -->
-    <thead>
+    <thead class="table-info">
       <tr>
         <th *ngFor="let name of levelNamesArr">
           {{name}}
@@ -73,7 +74,7 @@
             <ng-container
               *ngIf="fillCurrentTotalArray(getKey(item), getKey(outputObjectJson.sheet[i + 1])) as dataArray">
               <ng-container *ngFor="let data of dataArray">
-                <tr class="totalRowClass">
+                <tr class="totalRowClass table-info">
                   <td *ngFor="let p of [].constructor(data['colOffset'])"></td>
                   <td>{{data['totalColName']}}</td>
                   <td *ngFor="let p of [].constructor(data['remainingLevels'])"></td>
@@ -89,7 +90,7 @@
           <!-- Execute a function and store the result in an array -->
           <ng-container *ngIf="fillCurrentTotalArray(getKey(item), '') as dataArray">
             <ng-container *ngFor="let data of dataArray">
-              <tr class="totalRowClass">
+              <tr class="totalRowClass table-info">
                 <td *ngFor="let p of [].constructor(data['colOffset'])"></td>
                 <td>{{data['totalColName']}}</td>
                 <td *ngFor="let p of [].constructor(data['remainingLevels'])"></td>
@@ -102,7 +103,7 @@
         <ng-container *ngIf="i==outputObjectJson.sheet.length - 1">
           <ng-container *ngIf="fillCurrentTotalArray('', '') as dataArray">
             <ng-container *ngFor="let data of dataArray">
-              <tr class="totalRowClass">
+              <tr class="totalRowClass table-success">
                 <td>Grand Total</td>
                 <td *ngFor="let p of [].constructor(levelNamesArr.length-1)"></td>
                 <td contenteditable="true" *ngFor="let grandYrTotal of data['totalColValue'],let r=index"
@@ -114,4 +115,5 @@
       </ng-container>
     </tbody>
   </table>
+</div>
 </div>
