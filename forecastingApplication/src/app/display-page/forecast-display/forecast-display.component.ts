@@ -92,7 +92,14 @@ export class ForecastDisplayComponent implements OnInit {
 
   getYearRange() {
     const startRng = this.inputObject.time.start;
-    const endRng = this.inputObject.time.end;
+    let endRng = this.inputObject.time.end;
+
+    //---------check on end range ----------------------------------
+    if(this.inputObject.timeSeriesType=="Month"){
+      endRng=Math.min(endRng,12);
+    } else if (this.inputObject.timeSeriesType=="Day"){
+      endRng=Math.min(endRng,7);
+    }
 
     // Generate an array of years from startYear to endYear
     for (let i = startRng; i <= endRng; i++) {
