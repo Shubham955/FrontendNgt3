@@ -49,8 +49,8 @@
         <th *ngFor="let name of levelNamesArr">
           {{name}}
         </th>
-        <th *ngFor="let timeVal of timeRangeArr">
-          {{inputObject.time['series']}} {{timeVal}}
+        <th *ngFor="let timeVal of timeAttributes" contenteditable="true" (blur)="onTimeSeriesEdit($event, timeVal)">
+          {{timeVal}}
         </th>
       </tr>
     </thead>

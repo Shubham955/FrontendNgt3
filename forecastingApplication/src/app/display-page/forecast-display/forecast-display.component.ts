@@ -31,7 +31,7 @@ export class ForecastDisplayComponent implements OnInit {
   loadSpinner: boolean = false;
   selected: Array<any> = [];
   copied: Array<any> = [];
-
+  timeAttributes : Array<String> = [];
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     public worksheetParametersTransferService: WorksheetParametersTransferService,
@@ -69,6 +69,7 @@ export class ForecastDisplayComponent implements OnInit {
         }
       );
     }
+    this.getTimeAttributes(this.timeRangeArr,this.worksheetParametersTransferService.timeSeriesType);
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
 
   }
@@ -113,6 +114,21 @@ export class ForecastDisplayComponent implements OnInit {
     this.isFetchRequested = true;
   }
 
+  //Function to generate time attribute array\
+  getTimeAttributes(timeRangeArr : Array<number> , seriesType : string){
+    const months = ["Jan" , "Feb" , "Mar" , "Apr" ,"May" , "June" , "July" , "Aug" , "Sep" , "Oct" , "Nov" , "Dec" ];
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    timeRangeArr.forEach((time)=>{
+      if(seriesType == "Month"){
+        this.timeAttributes.push(months[time-1]);
+      }else if(seriesType == "Day"){
+        this.timeAttributes.push(days[time-1]);
+      }else{
+        this.timeAttributes.push(`${seriesType} ${time}`);
+      }
+    })
+  }
+
   //open sheet code related function
   loadWorksheet() {
     this.forecastManagementService.getTableSchema(this.worksheetParametersTransferService.sheetName).subscribe((result) => {
@@ -130,6 +146,15 @@ export class ForecastDisplayComponent implements OnInit {
     });
     //fetch form closed
     this.isFetchRequested = false;
+  }
+
+  onTimeSeriesEdit(event: Event, timeVal:String){
+    const value=(event.target as HTMLTableCellElement).innerText.trim();
+    this.timeAttributes.forEach((x, ind)=>{
+      if(x==timeVal){
+        this.timeAttributes[ind]=value;
+      }
+    })
   }
 
   onCellEdit(event: Event, key: string, item: any) {
@@ -207,6 +232,7 @@ export class ForecastDisplayComponent implements OnInit {
     let yearLessTotalArr: any[] = [];
     let changedYear = this.timeRangeArr[j];
     let prevYearExists = j == 0 ? false : true;
+    // this.levelTotals[curItemKey][j] = value;
 
     //here logic is that if suppose 2015 to 2017 years present and suppose 2016 total changed
     //then if 2016 has any non zero value then we will take ratios of 2016 otherwise ratios of
@@ -296,7 +322,7 @@ export class ForecastDisplayComponent implements OnInit {
     let useYearLessTotal = true;
 
     let nextLevelTotal: any[] = [];
-
+    // this.levelTotals[curTotalLevelKey][j] = intValue;
     //here levelTotals array iterated
     //suppose curTotalLeveLKey=Country2-Gender2
     //then this changed total has to get distributed in AGe level having keys=Country2-Gender2-Age1 and Country2-Gender2-Age2
@@ -371,7 +397,8 @@ export class ForecastDisplayComponent implements OnInit {
     }
 
     let nextLevelTotalSum = nextLevelTotal.reduce((acc, curValue) => acc + curValue, 0);
-    nextLevelTotal = nextLevelTotal.map((x) => x * intValue / nextLevelTotalSum);
+    nextLevelTotal = nextLevelTotal.map((x) => (x * intValue / nextLevelTotalSum) );
+    // nextLevelTotal = nextLevelTotal.map((x) => (x * intValue / nextLevelTotalSum) || x );
 
     //reallocate to key in totals
     for (const levelTotalKey in this.levelTotals) {
@@ -434,6 +461,7 @@ export class ForecastDisplayComponent implements OnInit {
 
   // Function to initialize the level totals object
   initializeLevelTotals() {
+    // const existingLevelTotals = { ...this.levelTotals }; 
     this.levelTotals = {};
     const grandTotalKey = 'GrandTotal';
     if (!this.levelTotals[grandTotalKey]) {
@@ -455,6 +483,21 @@ export class ForecastDisplayComponent implements OnInit {
       });
     });
 
+  // Retain non-zero values from existing levels total
+  // for (const key in existingLevelTotals) {
+  //   existingLevelTotals[key].forEach((totalValue : number,index : number)=>{
+  //       if (existingLevelTotals[key][index]!=0 && this.levelTotals[key][index]==0) {
+  //         this.levelTotals[key][index] = existingLevelTotals[key][index]
+  //       }
+  //   });
+    // if (existingLevelTotals[key].some((value: number, index: string | number) => this.levelTotals[key][index] === 0 && value !== 0)) {
+    //   this.levelTotals[key] = this.levelTotals[key].map((value: number, index: number) =>
+    //     value === 0 && existingLevelTotals[key][index] !== 0 ? existingLevelTotals[key][index] : value
+    //   );
+    // }
+  // }
+
+  this.levelTotals = {...this.levelTotals}
     console.log("totals array", this.levelTotals);
   }
 
