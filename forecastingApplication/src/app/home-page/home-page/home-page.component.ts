@@ -27,6 +27,8 @@ export class HomePageComponent implements OnInit {
   message: string = '';
   invalidTimeRange: boolean=false;
   notMinimumLevels: boolean=false;
+  timeAttributes : Array<String> = [];
+  timeRangeArr: any = [];
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -96,6 +98,32 @@ export class HomePageComponent implements OnInit {
     this.levelCountArr[i] = intValue;
   }
 
+  getYearRange() {
+    const startRng = this.worksheetForm.value.startRange;
+    let endRng = this.worksheetForm.value.endRange;
+
+    // Generate an array of years from startYear to endYear
+    for (let i = startRng; i <= endRng; i++) {
+      this.timeRangeArr.push(i);
+    }
+    console.log("Time Range", this.timeRangeArr);
+  }
+
+  //Function to generate time attribute array\
+  getTimeAttributes(timeRangeArr : Array<number> , seriesType : string){
+    const months = ["Jan" , "Feb" , "Mar" , "Apr" ,"May" , "Jun" , "Jul" , "Aug" , "Sep" , "Oct" , "Nov" , "Dec" ];
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    timeRangeArr.forEach((time)=>{
+      if(seriesType == "Month"){
+        this.timeAttributes.push(months[(time-1)%12]);
+      }else if(seriesType == "Day"){
+        this.timeAttributes.push(days[(time-1)%7]);
+      }else{
+        this.timeAttributes.push(`${seriesType} ${time}`);
+      }
+    })
+  }
+
   createWorksheet() {
     if(this.worksheetForm.value.startRange>this.worksheetForm.value.endRange){
       this.invalidTimeRange=true;
@@ -118,6 +146,10 @@ export class HomePageComponent implements OnInit {
     this.worksheetParametersTransferService.timeSeriesType = this.worksheetForm.value.timeSeriesType;
     this.worksheetParametersTransferService.levelNames = this.levelNameArr;
     this.worksheetParametersTransferService.levelCount = this.levelCountArr;
+
+    //populating timeRangeArr and timeAttributes
+    this.getYearRange();
+    this.getTimeAttributes(this.timeRangeArr, this.worksheetForm.value.timeSeriesType);
 
     let creationJsonData = this.getCreationTimeJson();
 
@@ -180,6 +212,8 @@ export class HomePageComponent implements OnInit {
       "start": this.worksheetParametersTransferService.startRange,
       "end": this.worksheetParametersTransferService.endRange
     }
+
+    jsonSheet["timeAttributes"]=this.timeAttributes;
 
     console.log(jsonSheet)
 

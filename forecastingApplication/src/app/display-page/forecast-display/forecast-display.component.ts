@@ -31,7 +31,7 @@ export class ForecastDisplayComponent implements OnInit {
   loadSpinner: boolean = false;
   selected: Array<any> = [];
   copied: Array<any> = [];
-  timeAttributes : Array<String> = [];
+  timeAttributes : Array<String> = this.worksheetParametersTransferService.jsonSchemaCreate["timeAttributes"];//[];
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     public worksheetParametersTransferService: WorksheetParametersTransferService,
@@ -69,7 +69,7 @@ export class ForecastDisplayComponent implements OnInit {
         }
       );
     }
-    this.getTimeAttributes(this.timeRangeArr,this.worksheetParametersTransferService.timeSeriesType);
+    //this.getTimeAttributes(this.timeRangeArr,this.worksheetParametersTransferService.timeSeriesType);
     console.log("output obj in string form", JSON.stringify(this.outputObjectJson));
 
   }
@@ -115,19 +115,19 @@ export class ForecastDisplayComponent implements OnInit {
   }
 
   //Function to generate time attribute array\
-  getTimeAttributes(timeRangeArr : Array<number> , seriesType : string){
-    const months = ["Jan" , "Feb" , "Mar" , "Apr" ,"May" , "Jun" , "Jul" , "Aug" , "Sep" , "Oct" , "Nov" , "Dec" ];
-    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    timeRangeArr.forEach((time)=>{
-      if(seriesType == "Month"){
-        this.timeAttributes.push(months[(time-1)%12]);
-      }else if(seriesType == "Day"){
-        this.timeAttributes.push(days[(time-1)%7]);
-      }else{
-        this.timeAttributes.push(`${seriesType} ${time}`);
-      }
-    })
-  }
+  // getTimeAttributes(timeRangeArr : Array<number> , seriesType : string){
+  //   const months = ["Jan" , "Feb" , "Mar" , "Apr" ,"May" , "Jun" , "Jul" , "Aug" , "Sep" , "Oct" , "Nov" , "Dec" ];
+  //   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  //   timeRangeArr.forEach((time)=>{
+  //     if(seriesType == "Month"){
+  //       this.timeAttributes.push(months[(time-1)%12]);
+  //     }else if(seriesType == "Day"){
+  //       this.timeAttributes.push(days[(time-1)%7]);
+  //     }else{
+  //       this.timeAttributes.push(`${seriesType} ${time}`);
+  //     }
+  //   })
+  // }
 
   //open sheet code related function
   loadWorksheet() {
