@@ -92,7 +92,7 @@ export class ForecastDisplayComponent implements OnInit {
 
   getYearRange() {
     const startRng = this.inputObject.time.start;
-    const endRng = this.inputObject.time.end;
+    let endRng = this.inputObject.time.end;
 
     // Generate an array of years from startYear to endYear
     for (let i = startRng; i <= endRng; i++) {
@@ -116,13 +116,13 @@ export class ForecastDisplayComponent implements OnInit {
 
   //Function to generate time attribute array\
   getTimeAttributes(timeRangeArr : Array<number> , seriesType : string){
-    const months = ["Jan" , "Feb" , "Mar" , "Apr" ,"May" , "June" , "July" , "Aug" , "Sep" , "Oct" , "Nov" , "Dec" ];
+    const months = ["Jan" , "Feb" , "Mar" , "Apr" ,"May" , "Jun" , "Jul" , "Aug" , "Sep" , "Oct" , "Nov" , "Dec" ];
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     timeRangeArr.forEach((time)=>{
       if(seriesType == "Month"){
-        this.timeAttributes.push(months[time-1]);
+        this.timeAttributes.push(months[(time-1)%12]);
       }else if(seriesType == "Day"){
-        this.timeAttributes.push(days[time-1]);
+        this.timeAttributes.push(days[(time-1)%7]);
       }else{
         this.timeAttributes.push(`${seriesType} ${time}`);
       }
