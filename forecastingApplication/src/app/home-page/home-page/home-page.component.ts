@@ -226,6 +226,8 @@ export class HomePageComponent implements OnInit {
     this.forecastManagementService.getTableSchema(tableName).subscribe(
       (res) => {
         this.worksheetParametersTransferService.jsonSchemaCreate = res;
+        console.log("Schema",res);
+        
         this.worksheetParametersTransferService.levelNames = [];
         this.worksheetParametersTransferService.levelCount = 0;
         this.worksheetParametersTransferService.endRange = res["time"]["end"];

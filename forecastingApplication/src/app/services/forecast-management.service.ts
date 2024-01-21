@@ -30,5 +30,7 @@ export class ForecastManagementService {
     return this.httpClient.put(`${this.url}/sheet/${tableName}`, updatedData);
   }
 
-
+  updateSchema(schema : Object){
+    return this.httpClient.put(`${this.url}/schema`,schema);
+  }
 }

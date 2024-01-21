@@ -32,6 +32,7 @@ export class ForecastDisplayComponent implements OnInit {
   selected: Array<any> = [];
   copied: Array<any> = [];
   timeAttributes : Array<String> = this.worksheetParametersTransferService.jsonSchemaCreate["timeAttributes"];//[];
+  schemaEdited : boolean = false;
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     public worksheetParametersTransferService: WorksheetParametersTransferService,
@@ -43,6 +44,8 @@ export class ForecastDisplayComponent implements OnInit {
   ngOnInit(): void {
     // get notification
     this.notify();
+    console.log(this.worksheetParametersTransferService.jsonSchemaCreate["timeAttributes"]);
+    
     //fetch sheet form
     this.fetchSheetForm = this.formBuilder.group({
       sheetName: [, [Validators.required]]
@@ -155,6 +158,7 @@ export class ForecastDisplayComponent implements OnInit {
         this.timeAttributes[ind]=value;
       }
     })
+    this.schemaEdited = true;
   }
 
   onCellEdit(event: Event, key: string, item: any) {
@@ -692,6 +696,13 @@ export class ForecastDisplayComponent implements OnInit {
         this.eraseNotification();
       })
 
+    }
+    if(this.schemaEdited){
+      this.inputObject.timeAttributes = this.timeAttributes;
+      this.forecastManagementService.updateSchema(this.inputObject).subscribe({
+        next: (res)=>{return;}, 
+        error: (err)=>{console.log(err);}
+      });
     }
   }
 
