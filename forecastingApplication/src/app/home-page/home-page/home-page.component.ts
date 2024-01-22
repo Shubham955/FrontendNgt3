@@ -103,7 +103,7 @@ export class HomePageComponent implements OnInit {
     let endRng = this.worksheetForm.value.endRange;
 
     // Generate an array of years from startYear to endYear
-    for (let i = startRng; i <= endRng; i++) {
+    for (let i = parseInt(startRng); i <= parseInt(endRng); i++) {
       this.timeRangeArr.push(i);
     }
     console.log("Time Range", this.timeRangeArr);
@@ -125,7 +125,7 @@ export class HomePageComponent implements OnInit {
   }
 
   createWorksheet() {
-    if(this.worksheetForm.value.startRange>this.worksheetForm.value.endRange){
+    if(parseInt(this.worksheetForm.value.startRange)>parseInt(this.worksheetForm.value.endRange)){
       this.invalidTimeRange=true;
     } else{
       this.invalidTimeRange=false;

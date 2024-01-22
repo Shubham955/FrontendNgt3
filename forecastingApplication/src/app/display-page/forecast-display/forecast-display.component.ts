@@ -98,7 +98,7 @@ export class ForecastDisplayComponent implements OnInit {
     let endRng = this.inputObject.time.end;
 
     // Generate an array of years from startYear to endYear
-    for (let i = startRng; i <= endRng; i++) {
+    for (let i = parseInt(startRng); i <= parseInt(endRng); i++) {
       this.timeRangeArr.push(i);
     }
     console.log("Time Range", this.timeRangeArr);
@@ -590,7 +590,7 @@ export class ForecastDisplayComponent implements OnInit {
 
       combination.forEach((field: Field) => {
         if (field.type === "Object") {
-          for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
+          for (let year = parseInt(inputObject.time.start); year <= inputObject.time.end; year++) {
             sheetEntry['data'][year.toString()] = Math.floor(Math.random() * 10); // Initialize data for each year to 0
           }
         } else {
@@ -604,7 +604,7 @@ export class ForecastDisplayComponent implements OnInit {
         combinationCounts[combinationKey] = 1;
       }
 
-      for (let year = inputObject.time.start; year <= inputObject.time.end; year++) {
+      for (let year = parseInt(inputObject.time.start); year <= inputObject.time.end; year++) {
         sheetEntry['data'][year.toString()] = 0;
       }
 
