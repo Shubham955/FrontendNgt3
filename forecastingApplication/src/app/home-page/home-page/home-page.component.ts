@@ -85,17 +85,12 @@ export class HomePageComponent implements OnInit {
     this.isLevelToBeAdded = true;
   }
 
-  onLevelNameEdit(event: Event, i: number) {
-    const target = event.target as HTMLTableCellElement;
-    const value = target.innerText.trim();
-    this.levelNameArr[i] = value;
+  onLevelNameEdit(eventData : {index: number , value : string}) {
+    this.levelNameArr[eventData.index] = eventData.value;
   }
 
-  onLevelCountEdit(event: Event, i: number) {
-    const target = event.target as HTMLTableCellElement;
-    const value = target.innerText.trim();
-    const intValue = parseInt(value);
-    this.levelCountArr[i] = intValue;
+  onLevelCountEdit(eventData : {index : number , value :  number}) {
+    this.levelCountArr[eventData.index] = eventData.value;
   }
 
   getYearRange() {

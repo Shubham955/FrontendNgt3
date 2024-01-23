@@ -1,0 +1,16 @@
+<table class="table table-striped table-hover text-center">
+    <thead>
+        <tr>
+            <th scope="col">Level No.</th>
+            <th scope="col">Name</th>
+            <th scope="col">Possible Values (Count)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let num of levelNumbers, let i=index">
+            <td>{{levelNumbers[i]}}</td>
+            <td contenteditable="true" (blur)="onLevelNameEdit($event,i)">{{levelNames[i]}}</td>
+            <td contenteditable="true" (blur)="onValueCountEdit($event ,i)">{{valueCounts[i]}}</td>
+        </tr>
+    </tbody>
+</table>

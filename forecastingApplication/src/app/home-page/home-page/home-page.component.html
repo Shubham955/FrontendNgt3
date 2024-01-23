@@ -174,7 +174,7 @@
             </div>
         </div>
     </div>
-    <table id="levelInputTable">
+    <!-- <table id="levelInputTable">
         <tr>
             <th>Level No.</th>
             <th>Name</th>
@@ -185,5 +185,7 @@
             <td contenteditable="true" (blur)="onLevelNameEdit($event, i)">{{levelNameArr[i]}}</td>
             <td contenteditable="true" (blur)="onLevelCountEdit($event, i)">{{levelCountArr[i]}}</td>
         </tr>
-    </table>
+    </table> -->
+    <app-schema-display [levelNames]="levelNameArr" [levelNumbers]="levelNoArr" [valueCounts]="levelCountArr"
+        (levelNameEdit)="onLevelNameEdit($event)" (valueCountEdit)="onLevelCountEdit($event)"></app-schema-display>
 </div>
